@@ -30,7 +30,7 @@
     @apply border-border-custom;
   }
 
-  body {
+  html, body {
     @apply bg-white text-text-primary font-inter antialiased;
     overflow-x: hidden;
   }

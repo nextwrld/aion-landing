@@ -55,7 +55,7 @@ export default function Navbar() {
         style={{ height: 72 }}
       >
         <div className="section-container h-full flex items-center justify-between relative">
-          <Logo variant="dark" className="min-w-0 pr-16 md:pr-3 max-w-full" />
+          <Logo variant="dark" className="min-w-0 pr-3 md:pr-16 max-w-full" />
 
           <div className="hidden md:flex items-center gap-8">
             {c.navbar.links.map((link) => (
