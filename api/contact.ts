@@ -1,4 +1,33 @@
-import { sendEmail } from "./_utils/email";
+import nodemailer from "nodemailer";
+
+type EmailPayload = {
+  to: string;
+  subject: string;
+  html: string;
+};
+
+const smtpOptions = {
+  host: process.env.EMAIL_SERVER_HOST,
+  port: parseInt(process.env.EMAIL_SERVER_PORT || "465"),
+  secure: parseInt(process.env.EMAIL_SERVER_PORT || "465") === 465,
+  auth: {
+    user: process.env.EMAIL_SERVER_USER,
+    pass: process.env.EMAIL_SERVER_PASSWORD,
+  },
+};
+
+const sendEmail = async (data: EmailPayload) => {
+  const transporter = nodemailer.createTransport({
+    ...smtpOptions,
+  });
+
+  const result = await transporter.sendMail({
+    from: process.env.EMAIL_FROM,
+    ...data,
+  });
+
+  return result;
+};
 
 export default async function handler(req: any, res: any) {
   if (req.method !== "POST") {
@@ -9,12 +38,6 @@ export default async function handler(req: any, res: any) {
     const { fullName, email, phone, message } = req.body || {};
 
     if (!fullName || !email || !message) {
-      console.error("❌ Validation failed:", {
-        fullName: !!fullName,
-        email: !!email,
-        message: !!message,
-      });
-
       return res.status(400).json({ error: "Missing required fields" });
     }
 
@@ -33,18 +56,11 @@ export default async function handler(req: any, res: any) {
       html: emailHtml,
     });
 
-    console.log("✅ Email sent successfully!");
-
     return res.status(200).json({ success: true, message: "Email sent successfully" });
   } catch (error: any) {
-    console.error("❌ Error sending email:");
-    console.error("Error message:", error.message);
-    console.error("Error stack:", error.stack);
-
     return res.status(500).json({
       error: "Failed to send email",
       details: error.message,
-      hint: "Check server logs for more details",
     });
   }
 }
