@@ -235,10 +235,7 @@ export const content = {
       supportTitle: "Soporte",
       productLinks: ["Funciones", "Precios", "API"],
       supportLinks: [
-        "Centro de ayuda",
-        "Contacto",
-        "Estado del sistema",
-        "Blog",
+        "Contacto"
       ],
       rights: "2026 AION Wellness. Todos los derechos reservados.",
       version: "Versión 1.0",
@@ -476,7 +473,7 @@ export const content = {
       productTitle: "Product",
       supportTitle: "Support",
       productLinks: ["Features", "Pricing", "API"],
-      supportLinks: ["Help center", "Contact", "System status", "Blog"],
+      supportLinks: ["Contact"],
       rights: "2026 AION Wellness. All rights reserved.",
       version: "Version 1.0",
     },
