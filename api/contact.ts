@@ -35,24 +35,32 @@ export default async function handler(req: any, res: any) {
   }
 
   try {
-    const { fullName, email, phone, message } = req.body || {};
+    const { fullName, email, phone, gymName, members, message } = req.body || {};
 
     if (!fullName || !email || !message) {
       return res.status(400).json({ error: "Missing required fields" });
     }
 
     const emailHtml = `
-      <h2>Solicitud de DEMO y contacto para usar AION Wellness</h2>
-      <p><strong>Nombre:</strong> ${fullName}</p>
-      <p><strong>Email:</strong> ${email}</p>
-      <p><strong>Teléfono:</strong> ${phone || "Not provided"}</p>
-      <p><strong>Mensaje:</strong></p>
-      <p>${message}</p>
+      <div style="font-family: Inter, Arial, sans-serif; max-width: 640px; margin: 0 auto; color: #0f172a;">
+        <h2 style="margin: 0 0 16px; color: #0b3b8f;">Solicitud de DEMO y contacto para usar AION Wellness</h2>
+        <p style="margin: 0 0 20px; color: #334155;">Llegó un nuevo interesado desde el formulario web.</p>
+
+        <div style="border: 1px solid #e2e8f0; border-radius: 12px; padding: 16px; background: #f8fafc;">
+          <p style="margin: 0 0 10px;"><strong>Nombre:</strong> ${fullName}</p>
+          <p style="margin: 0 0 10px;"><strong>Email:</strong> ${email}</p>
+          <p style="margin: 0 0 10px;"><strong>Teléfono:</strong> ${phone || "No informado"}</p>
+          <p style="margin: 0 0 10px;"><strong>Gimnasio:</strong> ${gymName || "No informado"}</p>
+          <p style="margin: 0 0 10px;"><strong>Miembros:</strong> ${members || "No informado"}</p>
+          <p style="margin: 0 0 6px;"><strong>Mensaje:</strong></p>
+          <div style="white-space: pre-wrap; line-height: 1.5; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px;">${message}</div>
+        </div>
+      </div>
     `;
 
     await sendEmail({
       to: process.env.EMAIL_FROM || "contact@nextwrld.com",
-      subject: `Solicitud de DEMO y contacto: ${fullName}`,
+      subject: `Solicitud de DEMO AION WELLNESS y contacto: ${fullName}`,
       html: emailHtml,
     });
 

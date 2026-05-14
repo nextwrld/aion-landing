@@ -22,7 +22,9 @@ async function submitLeadForm(data: LeadFormData) {
     fullName: data.nombre,
     email: data.email,
     phone: data.telefono,
-    message: `Gimnasio: ${data.gimnasio}\nMiembros: ${data.miembros}\nMensaje: ${data.mensaje}`,
+    gymName: data.gimnasio,
+    members: data.miembros,
+    message: data.mensaje,
   };
 
   const response = await fetch('/api/contact', {
