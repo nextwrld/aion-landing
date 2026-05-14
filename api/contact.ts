@@ -42,17 +42,17 @@ export default async function handler(req: any, res: any) {
     }
 
     const emailHtml = `
-      <h2>New Contact Form Submission</h2>
-      <p><strong>Name:</strong> ${fullName}</p>
+      <h2>Solicitud de DEMO y contacto para usar AION Wellness</h2>
+      <p><strong>Nombre:</strong> ${fullName}</p>
       <p><strong>Email:</strong> ${email}</p>
-      <p><strong>Phone:</strong> ${phone || "Not provided"}</p>
-      <p><strong>Message:</strong></p>
+      <p><strong>Teléfono:</strong> ${phone || "Not provided"}</p>
+      <p><strong>Mensaje:</strong></p>
       <p>${message}</p>
     `;
 
     await sendEmail({
       to: process.env.EMAIL_FROM || "contact@nextwrld.com",
-      subject: `New Contact Form: ${fullName}`,
+      subject: `Solicitud de DEMO y contacto: ${fullName}`,
       html: emailHtml,
     });
 

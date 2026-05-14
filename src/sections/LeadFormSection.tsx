@@ -14,6 +14,7 @@ type LeadFormData = {
   email: string;
   telefono: string;
   miembros: string;
+  mensaje: string;
 };
 
 async function submitLeadForm(data: LeadFormData) {
@@ -21,7 +22,7 @@ async function submitLeadForm(data: LeadFormData) {
     fullName: data.nombre,
     email: data.email,
     phone: data.telefono,
-    message: `Gimnasio: ${data.gimnasio}\nMiembros: ${data.miembros}`,
+    message: `Gimnasio: ${data.gimnasio}\nMiembros: ${data.miembros}\nMensaje: ${data.mensaje}`,
   };
 
   const response = await fetch('/api/contact', {
@@ -41,7 +42,7 @@ export default function LeadFormSection() {
   const { c } = useI18n()
   const sectionRef = useRef<HTMLElement>(null);
   const [formState, setFormState] = useState<FormState>('idle');
-  const [formData, setFormData] = useState({ nombre: '', gimnasio: '', email: '', telefono: '', miembros: '' });
+  const [formData, setFormData] = useState({ nombre: '', gimnasio: '', email: '', telefono: '', miembros: '', mensaje: '' });
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   useEffect(() => {
@@ -62,6 +63,7 @@ export default function LeadFormSection() {
     else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) e.email = c.leadForm.invalidEmail;
     if (!formData.telefono.trim()) e.telefono = c.leadForm.required;
     if (!formData.miembros) e.miembros = c.leadForm.selectOption;
+    if (!formData.mensaje.trim()) e.mensaje = c.leadForm.required;
     setErrors(e);
     return Object.keys(e).length === 0;
   };
@@ -74,7 +76,7 @@ export default function LeadFormSection() {
     try {
       await submitLeadForm(formData);
       setFormState('success');
-      setFormData({ nombre: '', gimnasio: '', email: '', telefono: '', miembros: '' });
+      setFormData({ nombre: '', gimnasio: '', email: '', telefono: '', miembros: '', mensaje: '' });
       setErrors({});
     } catch (error) {
       console.error('Lead form submission error', error);
@@ -111,6 +113,8 @@ export default function LeadFormSection() {
                   <div className="lf-field relative"><Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-text-light" /><input type="email" placeholder={c.leadForm.placeholders.email} value={formData.email} onChange={(e) => handleChange('email', e.target.value)} className={`w-full pl-10 pr-4 py-3.5 border-[1.5px] rounded-[10px] font-inter text-sm outline-none transition-all focus:border-wellness focus:ring-[3px] focus:ring-wellness/10 ${errors.email ? 'border-red-400' : 'border-border-custom'}`} />{errors.email && <p className="text-xs text-red-500 mt-1">{errors.email}</p>}</div>
                   <div className="lf-field relative"><Phone className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-text-light" /><input type="tel" placeholder={c.leadForm.placeholders.telefono} value={formData.telefono} onChange={(e) => handleChange('telefono', e.target.value)} className={`w-full pl-10 pr-4 py-3.5 border-[1.5px] rounded-[10px] font-inter text-sm outline-none transition-all focus:border-wellness focus:ring-[3px] focus:ring-wellness/10 ${errors.telefono ? 'border-red-400' : 'border-border-custom'}`} />{errors.telefono && <p className="text-xs text-red-500 mt-1">{errors.telefono}</p>}</div>
                   <div className="lf-field"><select value={formData.miembros} onChange={(e) => handleChange('miembros', e.target.value)} className={`w-full px-4 py-3.5 border-[1.5px] rounded-[10px] font-inter text-sm outline-none transition-all focus:border-wellness focus:ring-[3px] focus:ring-wellness/10 appearance-none bg-white ${errors.miembros ? 'border-red-400' : 'border-border-custom'} ${!formData.miembros ? 'text-text-light' : 'text-text-primary'}`}><option value="">{c.leadForm.placeholders.miembros}</option>{c.leadForm.membersOptions.map((opt) => <option key={opt} value={opt}>{opt}</option>)}</select>{errors.miembros && <p className="text-xs text-red-500 mt-1">{errors.miembros}</p>}</div>
+
+                  <div className="lf-field"><textarea placeholder={c.leadForm.placeholders.mensaje} value={formData.mensaje} onChange={(e) => handleChange('mensaje', e.target.value)} rows={4} className={`w-full px-4 py-3.5 border-[1.5px] rounded-[10px] font-inter text-sm outline-none transition-all resize-none focus:border-wellness focus:ring-[3px] focus:ring-wellness/10 ${errors.mensaje ? 'border-red-400' : 'border-border-custom'}`} />{errors.mensaje && <p className="text-xs text-red-500 mt-1">{errors.mensaje}</p>}</div>
 
                   <button type="submit" disabled={formState === 'submitting'} className="lf-field w-full bg-deep-blue text-white font-inter text-[15px] font-semibold py-4 rounded-[10px] shadow-[0_4px_12px_rgba(15,23,42,0.2)] hover:bg-[#1E293B] hover:-translate-y-0.5 hover:shadow-[0_6px_20px_rgba(15,23,42,0.3)] active:translate-y-0 transition-all duration-200 disabled:opacity-80 flex items-center justify-center gap-2 mt-2">{formState === 'submitting' ? <><Loader2 className="w-5 h-5 animate-spin" />{c.leadForm.sending}</> : c.leadForm.submit}</button>
                   <p className="text-center font-inter text-xs text-text-secondary mt-1">{c.leadForm.privacy}</p>
