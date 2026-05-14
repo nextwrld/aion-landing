@@ -30,7 +30,8 @@
     @apply border-border-custom;
   }
 
-  html, body {
+  html,
+  body {
     @apply bg-white text-text-primary font-inter antialiased;
     overflow-x: hidden;
   }
@@ -39,18 +40,23 @@
     scroll-behavior: auto;
   }
 
-  h1, h2, h3, h4, h5, h6 {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     @apply font-sora;
   }
 }
 
 @layer components {
   .gradient-cta {
-    background: linear-gradient(135deg, #22C55E, #10B981);
+    background: linear-gradient(135deg, #22c55e, #10b981);
   }
 
   .gradient-cta-text {
-    background: linear-gradient(135deg, #22C55E, #10B981);
+    background: linear-gradient(135deg, #22c55e, #10b981);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -61,7 +67,11 @@
   }
 
   .green-glow {
-    background: radial-gradient(ellipse at center, rgba(34,197,94,0.08) 0%, transparent 70%);
+    background: radial-gradient(
+      ellipse at center,
+      rgba(34, 197, 94, 0.08) 0%,
+      transparent 70%
+    );
   }
 }
 
@@ -73,7 +83,9 @@
 
 /* Reduced motion support */
 @media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
+  *,
+  *::before,
+  *::after {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;

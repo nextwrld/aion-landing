@@ -8,6 +8,35 @@ gsap.registerPlugin(ScrollTrigger);
 
 type FormState = 'idle' | 'submitting' | 'success' | 'error';
 
+type LeadFormData = {
+  nombre: string;
+  gimnasio: string;
+  email: string;
+  telefono: string;
+  miembros: string;
+};
+
+async function submitLeadForm(data: LeadFormData) {
+  const payload = {
+    fullName: data.nombre,
+    email: data.email,
+    phone: data.telefono,
+    message: `Gimnasio: ${data.gimnasio}\nMiembros: ${data.miembros}`,
+  };
+
+  const response = await fetch('/api/contact', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
+
+  const result = await response.json();
+
+  if (!response.ok) {
+    throw new Error(result?.error || 'Failed to send message');
+  }
+}
+
 export default function LeadFormSection() {
   const { c } = useI18n()
   const sectionRef = useRef<HTMLElement>(null);
@@ -37,11 +66,20 @@ export default function LeadFormSection() {
     return Object.keys(e).length === 0;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!validate()) return;
     setFormState('submitting');
-    setTimeout(() => setFormState('success'), 1500);
+
+    try {
+      await submitLeadForm(formData);
+      setFormState('success');
+      setFormData({ nombre: '', gimnasio: '', email: '', telefono: '', miembros: '' });
+      setErrors({});
+    } catch (error) {
+      console.error('Lead form submission error', error);
+      setFormState('error');
+    }
   };
 
   const handleChange = (field: string, value: string) => {
