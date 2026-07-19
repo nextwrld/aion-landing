@@ -11,8 +11,8 @@ export default function Logo({ variant = 'dark', className = '' }: LogoProps) {
   const taglineColor = variant === 'dark' ? '#22C55E' : '#94A3B8';
 
   return (
-    <div className={`flex items-center gap-2 ${className}`}>
-      <img src="/assets/logo.svg" alt="" className="h-9 w-auto flex-shrink-0" />
+    <div className={`flex items-center gap-2 ${className}`} role="img" aria-label="AION Wellness">
+      <img src="/assets/logo.svg" alt="" aria-hidden="true" className="h-9 w-auto flex-shrink-0" />
       <div className="flex flex-col min-w-0">
         <span className="font-sora font-bold text-base sm:text-lg leading-tight tracking-tight truncate" style={{ color: textColor }}>
           AION Wellness

@@ -21,7 +21,7 @@ function DashboardMockup() {
         <div className="grid grid-cols-4 gap-3 p-4">
           {c.hero.mockup.statLabels.map((label, i) => (
             <div key={label} className="text-center">
-              <div className={`font-sora font-bold text-lg ${['text-wellness','text-energy','text-deep-blue','text-wellness-dark'][i]}`}>{['1,248','103','$45,680','98%'][i]}</div>
+              <div className={`font-sora font-bold text-lg ${['text-wellness','text-energy','text-deep-blue','text-wellness-dark'][i]}`}>{['1,248','103','$45,680','—'][i]}</div>
               <div className="text-[10px] text-text-secondary font-inter mt-0.5 leading-tight">{label}</div>
             </div>
           ))}
@@ -67,56 +67,29 @@ export default function HeroSection() {
   const headlineRef = useRef<HTMLHeadingElement>(null);
   const subRef = useRef<HTMLDivElement>(null);
   const ctaRef = useRef<HTMLDivElement>(null);
-  const statsRef = useRef<HTMLDivElement>(null);
+  const supportRef = useRef<HTMLParagraphElement>(null);
+  const positioningRef = useRef<HTMLParagraphElement>(null);
 
   useEffect(() => {
     const tl = gsap.timeline({ delay: 0.2 });
-    if (headlineRef.current) {
-      const text = c.hero.title;
-      headlineRef.current.innerHTML = '';
-      const chars: HTMLSpanElement[] = [];
-      const fragment = document.createDocumentFragment();
-      const words = text.split(' ');
-
-      words.forEach((word, wordIndex) => {
-        const wordSpan = document.createElement('span');
-        wordSpan.style.display = 'inline-block';
-        wordSpan.style.whiteSpace = 'nowrap';
-
-        word.split('').forEach((char) => {
-          const span = document.createElement('span');
-          span.textContent = char;
-          span.style.display = 'inline-block';
-          span.style.opacity = '0';
-          span.style.filter = 'blur(8px)';
-          wordSpan.appendChild(span);
-          chars.push(span);
-        });
-
-        fragment.appendChild(wordSpan);
-        if (wordIndex < words.length - 1) fragment.appendChild(document.createTextNode(' '));
-      });
-
-      headlineRef.current.appendChild(fragment);
-      tl.to(chars, { opacity: 1, filter: 'blur(0px)', duration: 0.4, stagger: 0.02, ease: 'power2.out' });
-    }
-    tl.fromTo(subRef.current, { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.6, ease: 'power2.out' }, '-=0.2');
-    tl.fromTo(ctaRef.current, { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.6, ease: 'power2.out' }, '-=0.4');
-    tl.fromTo(statsRef.current, { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.6, ease: 'power2.out' }, '-=0.3');
+    if (headlineRef.current) tl.fromTo(headlineRef.current, { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.6, ease: 'power2.out' });
+    tl.fromTo(subRef.current, { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.6, ease: 'power2.out' }, '-=0.3');
+    if (positioningRef.current) tl.fromTo(positioningRef.current, { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.6, ease: 'power2.out' }, '-=0.3');
+    tl.fromTo(ctaRef.current, { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.6, ease: 'power2.out' }, '-=0.3');
+    if (supportRef.current) tl.fromTo(supportRef.current, { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.6, ease: 'power2.out' }, '-=0.3');
     return () => { tl.kill(); };
   }, [c.hero.title]);
 
-  const scrollToDemo = () => document.getElementById('demo')?.scrollIntoView({ behavior: 'smooth' });
-
   return (
-    <section ref={sectionRef} id="inicio" className="relative min-h-[90vh] flex items-center pt-[72px] pb-20 overflow-hidden" style={{ background: 'radial-gradient(ellipse at 65% 50%, rgba(34,197,94,0.06) 0%, transparent 60%)' }}>
+    <section ref={sectionRef} id="inicio" aria-labelledby="hero-heading" className="relative min-h-[90vh] flex items-center pt-[72px] pb-20 overflow-hidden" style={{ background: 'radial-gradient(ellipse at 65% 50%, rgba(34,197,94,0.06) 0%, transparent 60%)' }}>
       <div className="section-container w-full"><div className="grid lg:grid-cols-[55%_45%] gap-12 items-center">
         <div className="order-2 lg:order-1 text-center lg:text-left">
           <span className="inline-block font-inter text-xs font-semibold tracking-[0.08em] uppercase text-wellness mb-4">{c.hero.badge}</span>
-          <h1 ref={headlineRef} className="font-sora font-bold text-[32px] sm:text-[40px] lg:text-[48px] leading-[1.12] tracking-[-0.02em] text-deep-blue max-w-[560px] mx-auto lg:mx-0" style={{ textWrap: 'balance' }} />
-          <div ref={subRef} className="opacity-0"><p className="font-inter text-base text-text-secondary mt-5 max-w-[480px] mx-auto lg:mx-0 leading-relaxed">{c.hero.subtitle}</p></div>
-          <div ref={ctaRef} className="opacity-0 mt-8"><button onClick={scrollToDemo} className="gradient-cta text-white font-inter text-[15px] font-semibold px-7 py-3.5 rounded-[10px] shadow-btn hover:shadow-btn-hover hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 inline-flex items-center gap-2 group">{c.hero.cta}<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="group-hover:translate-x-1 transition-transform"><path d="M5 12h14M12 5l7 7-7 7" /></svg></button></div>
-          <div ref={statsRef} className="opacity-0 mt-10 flex items-center justify-center lg:justify-start gap-6 sm:gap-8">{c.hero.stats.map((stat, i) => (<div key={i} className="flex items-center gap-6 sm:gap-8">{i > 0 && <div className="w-px h-6 bg-border-custom" />}<div className="text-center"><div className="font-sora font-bold text-2xl sm:text-[32px] text-deep-blue leading-tight">{stat.value}</div><div className="font-inter text-xs text-text-secondary mt-0.5">{stat.label}</div></div></div>))}</div>
+          <h1 id="hero-heading" ref={headlineRef} className="font-sora font-bold text-[32px] sm:text-[40px] lg:text-[48px] leading-[1.12] tracking-[-0.02em] text-deep-blue max-w-[560px] mx-auto lg:mx-0" style={{ textWrap: 'balance' }}>{c.hero.title}</h1>
+          <div ref={subRef}><p className="font-inter text-base text-text-secondary mt-5 max-w-[480px] mx-auto lg:mx-0 leading-relaxed">{c.hero.subtitle}</p></div>
+          <p ref={positioningRef} className="font-inter text-sm text-text-secondary mt-3 max-w-[480px] mx-auto lg:mx-0 leading-relaxed">{c.hero.positioning}</p>
+          <div ref={ctaRef} className="mt-8"><a href="#demo" className="gradient-cta text-white font-inter text-[15px] font-semibold px-7 py-3.5 rounded-[10px] shadow-btn hover:shadow-btn-hover hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 inline-flex items-center gap-2 group">{c.hero.cta}<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="group-hover:translate-x-1 transition-transform" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7" /></svg></a></div>
+          <p ref={supportRef} className="font-inter text-sm text-text-light mt-4 max-w-[480px] mx-auto lg:mx-0 leading-relaxed">{c.hero.support}</p>
         </div>
         <div className="order-1 lg:order-2 flex justify-center lg:justify-end"><DashboardMockup /></div>
       </div></div>

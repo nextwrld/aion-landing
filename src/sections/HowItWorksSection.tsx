@@ -24,10 +24,10 @@ export default function HowItWorksSection() {
   }, []);
 
   return (
-    <section ref={sectionRef} id="flujo" className="bg-light-gray py-16 sm:py-20 lg:py-[120px]">
+    <section ref={sectionRef} id="flujo" aria-labelledby="how-heading" className="bg-light-gray py-16 sm:py-20 lg:py-[120px]">
       <div className="section-container">
         <div className="text-center mb-12 lg:mb-16">
-          <h2 className="font-sora font-semibold text-[28px] sm:text-[32px] lg:text-[36px] leading-[1.25] tracking-[-0.01em] text-deep-blue">{c.howItWorks.title}</h2>
+          <h2 id="how-heading" className="font-sora font-semibold text-[28px] sm:text-[32px] lg:text-[36px] leading-[1.25] tracking-[-0.01em] text-deep-blue">{c.howItWorks.title}</h2>
           <p className="font-inter text-base text-text-secondary mt-4 max-w-[480px] mx-auto leading-relaxed">{c.howItWorks.subtitle}</p>
         </div>
 

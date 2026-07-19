@@ -11,19 +11,17 @@ export const content = {
       login: "Iniciar sesión",
       demo: "Solicitar demo",
     },
-    logo: { tagline: "GESTIONA. CONECTA. CRECE." },
+    logo: { tagline: "ORDENA. CONTROLA. CRECE." },
     hero: {
-      badge: "PLATAFORMA DE GESTIÓN PARA GIMNASIOS",
-      title:
-        "AION Wellness: Tu socio integral para simplificar y controlar tu gimnasio.",
+      badge: "SISTEMA PARA GIMNASIOS Y CENTROS DE BIENESTAR",
+      title: "Todo tu negocio fitness bajo control",
       subtitle:
-        "El software esencial diseñado para gimnasios pequeños y medianos que operan hoy con cuadernos y Excel. Resuelve el 80% de tu caos diario.",
-      cta: "Solicitar demo early adopter",
-      stats: [
-        { value: "200+", label: "gimnasios" },
-        { value: "4.9/5", label: "calificación" },
-        { value: "98%", label: "satisfacción" },
-      ],
+        "Gestiona clientes, membresías, pagos, accesos y caja desde un solo lugar.",
+      positioning:
+        "AION es el sistema que ayuda a ordenar, controlar y hacer crecer tu negocio de fitness y bienestar.",
+      cta: "Agendar una demostración gratuita",
+      support:
+        "Conoce cómo funcionaría AION en tu gimnasio. Sin compromiso.",
       mockup: {
         summary: "Resumen",
         statLabels: [
@@ -41,66 +39,61 @@ export const content = {
       },
     },
     painPoints: {
-      title: "¿Cansado del caos operativo de cuadernos, Excel y WhatsApp?",
+      title: "El día a día de tu gimnasio se vuelve caótico sin un sistema",
       subtitle:
-        "La mayoría de los gimnasios pequeños pierden horas cada día gestionando información fragmentada. Estos son los tres dolores más comunes.",
+        "Información dispersa, pagos no registrados, renovaciones olvidadas y dependencia de la recepción son problemas comunes en gimnasios que aún operan con cuadernos y mensajes.",
       items: [
         {
           image: "/assets/illust-notebook.png",
-          title: "Información fragmentada",
+          title: "Información fragmentada y renovaciones que se pierden",
           description:
-            "Perdiendo tiempo buscando datos de miembros entre hojas sueltas, notas de WhatsApp y archivos desordenados.",
+            "Datos de miembros repartidos entre cuadernos, Excel y mensajes. Vencimientos que nadie controla a tiempo y miembros que se enteran tarde de su estado de cuenta.",
         },
         {
           image: "/assets/illust-excel.png",
-          title: "Finanzas opacas",
+          title: "Pagos no registrados y caja opaca",
           description:
-            "Errores de facturación recurrentes y falta de control en la caja diaria. Nunca sabés exactamente cuánto ingresaste.",
+            "Cobros que no quedan asentados, errores de facturación y cierre de caja diario sin números claros. Es difícil saber con certeza cuánto ingresó en el día.",
         },
         {
           image: "/assets/illust-phone.png",
-          title: "Comunicación ineficiente",
+          title: "Dependencia de la recepción y control manual",
           description:
-            "Avisos de vencimiento que se pierden entre cientos de mensajes. Los miembros se enteran tarde de sus vencimientos.",
+            "El acceso depende de quién esté en la puerta. Sin alertas visuales ni registro automático, las decisiones se toman de memoria y la visibilidad remota es limitada.",
         },
       ],
     },
     benefits: {
-      title: "Centraliza lo esencial. Enfócate en tus miembros.",
+      title: "Tres formas en que AION te ayuda cada día",
       subtitle:
-        "Todo lo que necesitas para operar tu gimnasio en una sola plataforma. Sin funciones que nunca usarás.",
+        "Beneficios claros, sin funciones que no necesitas. Así se siente operar tu gimnasio con AION.",
       items: [
         {
-          title: "Control total de miembros",
+          title: "Todo centralizado",
           description:
-            "Vista instantánea del estado de cada miembro: Activo, Gracia o Vencido. Búsqueda rápida por nombre o DNI.",
+            "Clientes, membresías, pagos, accesos y caja en un solo lugar. Buscas por nombre o cédula y ves el estado al instante.",
         },
         {
-          title: "Membresías flexibles",
+          title: "Control a distancia",
           description:
-            "Seguimiento automático de planes mensuales, semanales o por pack de usos. Renovaciones sin esfuerzo.",
+            "Consulta cómo va tu gimnasio desde donde estés. Revisa ingresos, asistencia y estado de los miembros sin llamar a la recepción.",
         },
         {
-          title: "Check-in ágil",
+          title: "Operación más ordenada",
           description:
-            "Validación visual inmediata en la recepción. Sube de color según el estado del miembro en tiempo real.",
-        },
-        {
-          title: "Finanzas bajo control",
-          description:
-            "Cierres de caja diarios precisos y recibos digitales automáticos. Sabes exactamente cuánto ingresó cada día.",
+            "Cobros asentados al momento, cierre de caja con números claros y renovaciones que no dependen de la memoria de nadie.",
         },
       ],
     },
     frontDesk: {
       badge: "EXPERIENCIA EN RECEPCIÓN",
-      title: "Control de acceso sin fricciones",
+      title: "Control de acceso claro y sin fricciones",
       description:
-        "Mantén la fila en movimiento. Busca miembros al instante por nombre o DNI. El sistema proporciona alertas visuales claras para permitir o denegar el ingreso según el estado de pago en tiempo real, evitando conversaciones incómodas en la puerta.",
+        "Mantén la fila en movimiento. Busca miembros al instante por nombre o cédula. El sistema muestra alertas visuales para permitir o denegar el ingreso según el estado de pago, sin conversaciones incómodas en la puerta.",
       accessAllowed: "Acceso permitido",
       realTimeValidation: "Validación en tiempo real",
       features: [
-        "Búsqueda instantánea por nombre o DNI",
+        "Búsqueda instantánea por nombre o cédula",
         "Alertas visuales de estado en tiempo real",
         "Registro automático de check-ins",
       ],
@@ -109,13 +102,13 @@ export const content = {
     },
     howItWorks: {
       badge: "CÓMO FUNCIONA",
-      title: "Un flujo diario validado.",
+      title: "Un flujo diario pensado para tu recepción",
       subtitle:
-        "De la búsqueda al cierre de caja. Así funciona AION en tu recepción cada día.",
+        "De la búsqueda al cierre de caja. Así se usa AION en tu gimnasio cada día.",
       steps: [
         {
           title: "Buscar miembro",
-          desc: "Busca por nombre o DNI. Encuentra el perfil en segundos.",
+          desc: "Busca por nombre o cédula. Encuentra el perfil en segundos.",
         },
         {
           title: "Ver estado",
@@ -123,15 +116,15 @@ export const content = {
         },
         {
           title: "Cobrar (si corresponde)",
-          desc: "Registra el pago en el momento. El sistema actualiza todo automáticamente.",
+          desc: "Registra el pago en el momento. El sistema actualiza todo de inmediato.",
         },
         {
           title: "Permitir acceso",
-          desc: "El semáforo visual indica si puede ingresar. Check-in registrado.",
+          desc: "El semáforo visual indica si puede ingresar. El check-in queda registrado.",
         },
         {
           title: "Cerrar caja",
-          desc: "Cierre de caja diario con recibo digital. Fin del día sin sorpresas.",
+          desc: "Cierre de caja diario con números claros. Fin del día sin sorpresas.",
         },
       ],
     },
@@ -180,16 +173,16 @@ export const content = {
           a: "La mayoría opera en menos de 24 horas. La configuración inicial toma alrededor de 30 minutos.",
         },
         {
-          q: "¿Puedo probarlo antes?",
-          a: "Sí, ofrecemos prueba gratuita de 14 días con acceso completo y sin tarjeta de crédito.",
+          q: "¿Puedo ver una demostración antes?",
+          a: "Sí. Puedes agendar una demostración gratuita para conocer cómo funcionaría AION en tu gimnasio.",
         },
       ],
     },
     mvp: {
-      badge: "NUESTRA FILOSOFÍA",
-      title: "Un producto altamente enfocado.",
+      badge: "NUESTRO ENFOQUE",
+      title: "Un sistema pensado para el día a día",
       description:
-        "Este MVP resuelve el 80% core de tus operaciones diarias. Sin tiers confusos, sin funciones hinchadas. Pronto: Portales de miembros y automatizaciones avanzadas.",
+        "AION se enfoca en resolver el día a día de tu negocio de fitness y bienestar. Sin funciones que no necesitas, sin configuraciones complejas. Próximamente: portales para miembros y automatizaciones para crecer.",
       roadmap: [
         "Portales de miembros",
         "Automatizaciones avanzadas",
@@ -198,16 +191,16 @@ export const content = {
       ],
     },
     leadForm: {
-      title: "Prueba AION Wellness hoy",
+      title: "Agendar una demostración gratuita",
       subtitle:
-        "Únete a los gimnasios que ya dejaron el caos operativo atrás. Empieza gratis, sin tarjeta de crédito.",
+        "Conoce cómo funcionaría AION en tu gimnasio. Sin compromiso, con acompañamiento directo del equipo.",
       benefits: [
-        "Prueba gratuita de 14 días",
-        "Sin tarjeta de crédito",
-        "Implementación en 24 horas",
-        "Soporte personalizado",
+        "Demostración sin compromiso",
+        "Acompañamiento personalizado",
+        "Configuración con apoyo del equipo",
+        "Soporte directo durante la puesta en marcha",
       ],
-      successTitle: "¡Gracias! Te contactaremos pronto.",
+      successTitle: "Gracias. Te contactaremos pronto.",
       successSubtitle: "Revisa tu correo para confirmar tu solicitud.",
       formTitle: "Solicitar demo",
       error: "Hubo un error. Por favor intenta de nuevo.",
@@ -220,7 +213,7 @@ export const content = {
         mensaje: "Contanos brevemente qué necesitás",
       },
       membersOptions: ["Menos de 100", "100 - 400", "Más de 400"],
-      submit: "Empezar a operar mejor",
+      submit: "Agendar demostración",
       sending: "Enviando...",
       privacy:
         "Al enviar, aceptas nuestra política de privacidad. No compartimos tus datos.",
@@ -230,10 +223,10 @@ export const content = {
     },
     footer: {
       description:
-        "Plataforma SaaS para la gestión inteligente de gimnasios y centros de bienestar.",
+        "AION es el sistema que ayuda a ordenar, controlar y hacer crecer tu negocio de fitness y bienestar.",
       productTitle: "Producto",
       supportTitle: "Soporte",
-      productLinks: ["Funciones", "Precios", "API"],
+      productLinks: ["Funciones", "Cómo funciona", "Preguntas frecuentes"],
       supportLinks: [
         "Contacto"
       ],
@@ -244,26 +237,25 @@ export const content = {
   en: {
     navbar: {
       links: [
-        { label: "Solutions", href: "#soluciones" },
-        { label: "Features", href: "#funciones" },
-        { label: "FAQs", href: "#precios" },
+        { label: "Problems", href: "#soluciones" },
+        { label: "Benefits", href: "#funciones" },
+        { label: "How it works", href: "#flujo" },
+        { label: "Questions", href: "#preguntas" },
       ],
       login: "Log in",
       demo: "Request demo",
     },
-    logo: { tagline: "MANAGE. CONNECT. GROW." },
+    logo: { tagline: "ORGANIZE. CONTROL. GROW." },
     hero: {
-      badge: "GYM MANAGEMENT PLATFORM",
-      title:
-        "AION Wellness: Your all-in-one partner to simplify and control your gym.",
+      badge: "SYSTEM FOR GYMS AND WELLNESS CENTERS",
+      title: "Your entire fitness business under control",
       subtitle:
-        "Essential software for small and mid-sized gyms still running on notebooks and spreadsheets. Solve 80% of your daily chaos.",
-      cta: "Request early adopter demo",
-      stats: [
-        { value: "200+", label: "gyms" },
-        { value: "4.9/5", label: "rating" },
-        { value: "98%", label: "satisfaction" },
-      ],
+        "Manage clients, memberships, payments, access and daily cash from one place.",
+      positioning:
+        "AION is the system that helps you organize, control and grow your fitness and wellness business.",
+      cta: "Book a free demo",
+      support:
+        "See how AION would work at your gym. No commitment.",
       mockup: {
         summary: "Overview",
         statLabels: [
@@ -281,62 +273,57 @@ export const content = {
       },
     },
     painPoints: {
-      title: "Tired of operational chaos across notebooks, Excel and WhatsApp?",
+      title: "Your daily operations become chaotic without a system",
       subtitle:
-        "Most small gyms lose hours every day managing fragmented information. These are the three most common pain points.",
+        "Scattered information, unregistered payments, missed renewals and front-desk dependency are common problems for gyms still relying on notebooks and messages.",
       items: [
         {
           image: "/assets/illust-notebook.png",
-          title: "Fragmented information",
+          title: "Scattered information and missed renewals",
           description:
-            "Wasting time searching member data across loose sheets, WhatsApp notes, and scattered files.",
+            "Member data spread across notebooks, spreadsheets and messages. Renewals no one tracks on time, and members learning too late about their account status.",
         },
         {
           image: "/assets/illust-excel.png",
-          title: "Opaque finances",
+          title: "Unregistered payments and unclear cash flow",
           description:
-            "Recurring billing errors and poor control of daily cash closing. You never know exactly how much came in.",
+            "Charges that are not recorded, billing errors and daily cash closing without clear numbers. It is hard to know how much actually came in.",
         },
         {
           image: "/assets/illust-phone.png",
-          title: "Inefficient communication",
+          title: "Front-desk dependency and manual access",
           description:
-            "Due-date reminders get lost among hundreds of messages. Members learn too late about expirations.",
+            "Access depends on who is at the door. Without visual alerts or automatic logs, decisions rely on memory and remote visibility is limited.",
         },
       ],
     },
     benefits: {
-      title: "Centralize what matters. Focus on your members.",
+      title: "Three ways AION helps you every day",
       subtitle:
-        "Everything you need to run your gym in one platform. No features you will never use.",
+        "Clear benefits, no features you do not need. This is what running your gym with AION feels like.",
       items: [
         {
-          title: "Total member control",
+          title: "Everything centralized",
           description:
-            "Instant view of each member status: Active, Grace, or Expired. Fast search by name or ID.",
+            "Clients, memberships, payments, access and cash in one place. Search by name or ID and see status instantly.",
         },
         {
-          title: "Flexible memberships",
+          title: "Remote visibility",
           description:
-            "Automatic tracking for monthly, weekly, or usage-pack plans. Effortless renewals.",
+            "Check how your gym is doing from anywhere. Review revenue, attendance and member status without calling the front desk.",
         },
         {
-          title: "Fast check-in",
+          title: "More organized operations",
           description:
-            "Immediate visual validation at front desk with real-time status color signals.",
-        },
-        {
-          title: "Finances under control",
-          description:
-            "Accurate daily cash closing and automated digital receipts. Know exactly what came in each day.",
+            "Payments recorded on the spot, daily cash closing with clear numbers and renewals that do not depend on anyone's memory.",
         },
       ],
     },
     frontDesk: {
       badge: "FRONT DESK EXPERIENCE",
-      title: "Frictionless access control",
+      title: "Clear, frictionless access control",
       description:
-        "Keep the line moving. Search members instantly by name or ID. The system provides clear visual alerts to allow or deny access based on real-time payment status.",
+        "Keep the line moving. Search members instantly by name or ID. The system shows visual alerts to allow or deny access based on payment status, without awkward conversations at the door.",
       accessAllowed: "Access granted",
       realTimeValidation: "Real-time validation",
       features: [
@@ -349,9 +336,9 @@ export const content = {
     },
     howItWorks: {
       badge: "HOW IT WORKS",
-      title: "A validated daily workflow.",
+      title: "A daily workflow designed for your front desk",
       subtitle:
-        "From member lookup to daily cash closing. This is how AION works at your front desk every day.",
+        "From member lookup to daily cash closing. This is how AION is used at your gym every day.",
       steps: [
         {
           title: "Search member",
@@ -359,19 +346,19 @@ export const content = {
         },
         {
           title: "Check status",
-          desc: "Verify whether the member is active, in grace period, or expired at a glance.",
+          desc: "Verify whether the member is active, in grace, or expired at a glance.",
         },
         {
           title: "Charge (if needed)",
-          desc: "Register the payment on the spot. The system updates everything automatically.",
+          desc: "Register the payment on the spot. The system updates everything immediately.",
         },
         {
           title: "Allow access",
-          desc: "A visual traffic-light indicator shows if access is allowed. Check-in is logged.",
+          desc: "A visual traffic-light indicator shows if access is allowed. The check-in is logged.",
         },
         {
           title: "Close cash",
-          desc: "Daily cash closing with digital receipt. End your day with no surprises.",
+          desc: "Daily cash closing with clear numbers. End the day with no surprises.",
         },
       ],
     },
@@ -419,16 +406,16 @@ export const content = {
           a: "Most users are operating in less than 24 hours.",
         },
         {
-          q: "Can I try it before committing?",
-          a: "Yes, there is a 14-day free trial with full access and no credit card required.",
+          q: "Can I see a demo first?",
+          a: "Yes. You can book a free demo to see how AION would work at your gym.",
         },
       ],
     },
     mvp: {
-      badge: "OUR PHILOSOPHY",
-      title: "A highly focused product.",
+      badge: "OUR APPROACH",
+      title: "A system built for your daily operations",
       description:
-        "This MVP solves the core 80% of your daily operations. No confusing tiers, no bloated features. Coming soon: Member portals and advanced automations.",
+        "AION focuses on solving the day-to-day of your fitness and wellness business. No features you do not need, no complex configuration. Coming soon: member portals and automations to grow.",
       roadmap: [
         "Member portals",
         "Advanced automations",
@@ -437,16 +424,16 @@ export const content = {
       ],
     },
     leadForm: {
-      title: "Try AION Wellness today",
+      title: "Book a free demo",
       subtitle:
-        "Join gyms that already left operational chaos behind. Start free, no credit card required.",
+        "See how AION would work at your gym. No commitment, with direct support from the team.",
       benefits: [
-        "14-day free trial",
-        "No credit card required",
-        "24-hour onboarding",
-        "Personalized support",
+        "Free demo, no commitment",
+        "Personalized guidance",
+        "Setup support from the team",
+        "Direct support during go-live",
       ],
-      successTitle: "Thanks! We will contact you soon.",
+      successTitle: "Thanks. We will contact you soon.",
       successSubtitle: "Check your email to confirm your request.",
       formTitle: "Request demo",
       error: "There was an error. Please try again.",
@@ -459,7 +446,7 @@ export const content = {
         mensaje: "Briefly tell us what you need",
       },
       membersOptions: ["Less than 100", "100 - 400", "More than 400"],
-      submit: "Start operating better",
+      submit: "Book demo",
       sending: "Sending...",
       privacy:
         "By submitting, you accept our privacy policy. We do not share your data.",
@@ -469,10 +456,10 @@ export const content = {
     },
     footer: {
       description:
-        "SaaS platform for smart management of gyms and wellness centers.",
+        "AION is the system that helps you organize, control and grow your fitness and wellness business.",
       productTitle: "Product",
       supportTitle: "Support",
-      productLinks: ["Features", "Pricing", "API"],
+      productLinks: ["Features", "How it works", "Questions"],
       supportLinks: ["Contact"],
       rights: "2026 AION Wellness. All rights reserved.",
       version: "Version 1.0",

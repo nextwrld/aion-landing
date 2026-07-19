@@ -22,10 +22,10 @@ export default function BenefitsSection() {
   }, []);
 
   return (
-    <section ref={sectionRef} id="funciones" className="bg-white py-16 sm:py-20 lg:py-[120px]">
+    <section ref={sectionRef} id="beneficios" aria-labelledby="benefits-heading" className="bg-white py-16 sm:py-20 lg:py-[120px]">
       <div className="section-container">
         <div className="bnf-headline text-center mb-12 lg:mb-16">
-          <h2 className="font-sora font-semibold text-[28px] sm:text-[32px] lg:text-[36px] leading-[1.25] tracking-[-0.01em] text-deep-blue">{c.benefits.title}</h2>
+          <h2 id="benefits-heading" className="font-sora font-semibold text-[28px] sm:text-[32px] lg:text-[36px] leading-[1.25] tracking-[-0.01em] text-deep-blue">{c.benefits.title}</h2>
           <p className="font-inter text-base text-text-secondary mt-4 max-w-[520px] mx-auto leading-relaxed">{c.benefits.subtitle}</p>
         </div>
 

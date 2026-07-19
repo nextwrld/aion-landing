@@ -24,10 +24,10 @@ export default function ResourcesSection() {
   const openModal = (title: string) => { setModalTitle(title); setModalOpen(true); };
 
   return (
-    <section ref={sectionRef} id="recursos" className="bg-light-gray py-16 sm:py-20 lg:py-[120px]">
+    <section ref={sectionRef} id="recursos" aria-labelledby="resources-heading" className="bg-light-gray py-16 sm:py-20 lg:py-[120px]">
       <div className="section-container">
         <div className="res-headline text-center mb-12 lg:mb-16">
-          <h2 className="font-sora font-semibold text-[28px] sm:text-[32px] lg:text-[36px] leading-[1.25] tracking-[-0.01em] text-deep-blue">{c.resources.title}</h2>
+          <h2 id="resources-heading" className="font-sora font-semibold text-[28px] sm:text-[32px] lg:text-[36px] leading-[1.25] tracking-[-0.01em] text-deep-blue">{c.resources.title}</h2>
           <p className="font-inter text-base text-text-secondary mt-4 max-w-[480px] mx-auto leading-relaxed">{c.resources.subtitle}</p>
         </div>
 

@@ -19,10 +19,8 @@ export default function FrontDeskSection() {
     return () => ctx.revert();
   }, []);
 
-  const scrollToHowItWorks = () => document.getElementById('flujo')?.scrollIntoView({ behavior: 'smooth' });
-
   return (
-    <section ref={sectionRef} id="acceso" className="bg-white py-16 sm:py-20 lg:py-[120px]">
+    <section ref={sectionRef} id="acceso" aria-labelledby="frontdesk-heading" className="bg-white py-16 sm:py-20 lg:py-[120px]">
       <div className="section-container">
         <div className="grid lg:grid-cols-2 gap-10 lg:gap-14 items-center">
           <div className="fd-image">
@@ -37,7 +35,7 @@ export default function FrontDeskSection() {
 
           <div className="fd-text">
             <span className="font-inter text-xs font-semibold tracking-[0.08em] uppercase text-wellness">{c.frontDesk.badge}</span>
-            <h2 className="font-sora font-semibold text-[28px] sm:text-[32px] lg:text-[36px] leading-[1.25] tracking-[-0.01em] text-deep-blue mt-3">{c.frontDesk.title}</h2>
+            <h2 id="frontdesk-heading" className="font-sora font-semibold text-[28px] sm:text-[32px] lg:text-[36px] leading-[1.25] tracking-[-0.01em] text-deep-blue mt-3">{c.frontDesk.title}</h2>
             <p className="font-inter text-base text-text-primary mt-5 max-w-[460px] leading-relaxed">{c.frontDesk.description}</p>
 
             <div className="mt-6 flex flex-col gap-3">
@@ -46,10 +44,10 @@ export default function FrontDeskSection() {
               ))}
             </div>
 
-            <button onClick={scrollToHowItWorks} className="mt-7 inline-flex items-center gap-2 border-[1.5px] border-wellness text-wellness font-inter text-sm font-semibold px-6 py-3 rounded-[10px] hover:bg-wellness-light hover:border-wellness-dark transition-all duration-200">
+            <a href="#flujo" className="mt-7 inline-flex items-center gap-2 border-[1.5px] border-wellness text-wellness font-inter text-sm font-semibold px-6 py-3 rounded-[10px] hover:bg-wellness-light hover:border-wellness-dark transition-all duration-200">
               {c.frontDesk.cta}
-              <ArrowRight className="w-4 h-4" />
-            </button>
+              <ArrowRight className="w-4 h-4" aria-hidden="true" />
+            </a>
           </div>
         </div>
       </div>

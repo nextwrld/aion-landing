@@ -44,9 +44,10 @@ export default function Navbar() {
   };
 
   return (
-    <>
+    <header className="fixed top-0 left-0 right-0 z-[120]">
       <nav
         ref={navRef}
+        aria-label="Principal"
         className={`fixed top-0 left-0 right-0 z-[120] transition-all duration-300 ${
           scrolled
             ? "bg-white border-b border-border-custom shadow-sm"
@@ -55,12 +56,14 @@ export default function Navbar() {
         style={{ height: 72 }}
       >
         <div className="section-container h-full flex items-center justify-between relative">
-          <Logo variant="dark" className="min-w-0 pr-3 md:pr-16 max-w-full" />
+          <a href="#inicio" className="min-w-0 pr-3 md:pr-16 max-w-full" aria-label="AION Wellness, ir al inicio"><Logo variant="dark" className="min-w-0" /></a>
 
           <div className="hidden md:flex items-center gap-8">
             {c.navbar.links.map((link) => (
-              <button
+              <a
                 key={link.href}
+                href={link.href}
+                aria-current={activeSection === link.href ? "true" : undefined}
                 onClick={() => scrollTo(link.href)}
                 className={`relative font-inter text-sm font-medium transition-colors duration-200 hover:text-wellness ${
                   activeSection === link.href
@@ -76,18 +79,14 @@ export default function Navbar() {
                       : "scale-x-0 w-full"
                   }`}
                 />
-              </button>
+              </a>
             ))}
           </div>
 
           <div className="hidden md:flex items-center gap-4">
             <LanguageSwitcher />
-            <button
-              onClick={() => scrollTo("#demo")}
-              className="font-inter text-sm font-medium text-text-secondary hover:text-wellness transition-colors"
-            ></button>
-            <button
-              onClick={() => scrollTo("#demo")}
+            <a
+              href="#demo"
               className="gradient-cta text-white font-inter text-sm font-semibold px-5 py-2.5 rounded-[10px] shadow-btn hover:shadow-btn-hover hover:-translate-y-0.5 transition-all duration-200 flex items-center gap-2"
             >
               {c.navbar.demo}
@@ -100,10 +99,11 @@ export default function Navbar() {
                 strokeWidth="2.5"
                 strokeLinecap="round"
                 strokeLinejoin="round"
+                aria-hidden="true"
               >
                 <path d="M5 12h14M12 5l7 7-7 7" />
               </svg>
-            </button>
+            </a>
           </div>
         </div>
 
@@ -113,6 +113,7 @@ export default function Navbar() {
             onClick={() => setMobileOpen((v) => !v)}
             aria-label={mobileOpen ? "Cerrar menú" : "Abrir menú"}
             aria-expanded={mobileOpen}
+            aria-controls="mobile-menu"
           >
           {mobileOpen ? (
             <X className="w-6 h-6 text-deep-blue" />
@@ -123,40 +124,45 @@ export default function Navbar() {
       </nav>
 
       {mobileOpen && (
-        <div className="fixed inset-0 z-[140] md:hidden">
+        <div id="mobile-menu" className="fixed inset-0 z-[140] md:hidden">
           <div
             className="absolute inset-0 bg-black/50"
             onClick={() => setMobileOpen(false)}
+            aria-hidden="true"
           />
           <div className="absolute right-0 top-0 bottom-0 w-[280px] bg-white shadow-xl p-6 flex flex-col">
             <button
               className="self-end p-2 mb-6"
               onClick={() => setMobileOpen(false)}
+              aria-label="Cerrar menú"
             >
               <X className="w-6 h-6 text-deep-blue" />
             </button>
             <div className="mb-4">
               <LanguageSwitcher />
             </div>
-            <div className="flex flex-col gap-4">
+            <nav aria-label="Navegación móvil" className="flex flex-col gap-4">
               {c.navbar.links.map((link) => (
-                <button
+                <a
                   key={link.href}
+                  href={link.href}
                   onClick={() => scrollTo(link.href)}
                   className="text-left font-inter text-base font-medium text-text-primary hover:text-wellness transition-colors py-2"
                 >
                   {link.label}
-                </button>
+                </a>
               ))}
-            </div>
+            </nav>
             <div className="mt-auto flex flex-col gap-3">
-              <button
+              <a
+                href="#demo"
                 onClick={() => scrollTo("#demo")}
                 className="font-inter text-sm font-medium text-text-secondary hover:text-wellness transition-colors text-left py-2"
               >
                 {c.navbar.login}
-              </button>
-              <button
+              </a>
+              <a
+                href="#demo"
                 onClick={() => scrollTo("#demo")}
                 className="gradient-cta text-white font-inter text-sm font-semibold px-5 py-3 rounded-[10px] shadow-btn flex items-center justify-center gap-2"
               >
@@ -170,14 +176,15 @@ export default function Navbar() {
                   strokeWidth="2.5"
                   strokeLinecap="round"
                   strokeLinejoin="round"
+                  aria-hidden="true"
                 >
                   <path d="M5 12h14M12 5l7 7-7 7" />
                 </svg>
-              </button>
+              </a>
             </div>
           </div>
         </div>
       )}
-    </>
+    </header>
   );
 }

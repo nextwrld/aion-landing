@@ -20,12 +20,12 @@ export default function MVPSection() {
   }, []);
 
   return (
-    <section ref={sectionRef} className="bg-white py-16 sm:py-20">
+    <section ref={sectionRef} id="enfoque" aria-labelledby="enfoque-heading" className="bg-white py-16 sm:py-20">
       <div className="section-container max-w-[800px]">
         <div className="mvp-box relative bg-white rounded-2xl border border-border-custom shadow-card p-8 sm:p-10 lg:p-12">
           <div className="mvp-border-accent absolute left-0 top-4 bottom-4 w-0.5 bg-deep-blue rounded-full origin-top" />
           <span className="font-inter text-xs font-semibold tracking-[0.08em] uppercase text-wellness">{c.mvp.badge}</span>
-          <h3 className="font-sora font-semibold text-xl text-deep-blue mt-3">{c.mvp.title}</h3>
+          <h3 id="enfoque-heading" className="font-sora font-semibold text-xl text-deep-blue mt-3">{c.mvp.title}</h3>
           <p className="font-inter text-base text-text-primary mt-3 leading-relaxed">{c.mvp.description}</p>
 
           <div className="flex flex-wrap gap-3 mt-6">
