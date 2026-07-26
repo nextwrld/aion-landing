@@ -33,7 +33,7 @@ export default function FAQSection() {
                 <span className="font-sora font-semibold text-base sm:text-lg text-deep-blue pr-4">{faq.q}</span>
                 <ChevronDown className={`w-5 h-5 text-text-secondary flex-shrink-0 transition-transform duration-300 ${openIndex === i ? 'rotate-180' : ''}`} aria-hidden="true" />
               </button>
-              <div id={`faq-panel-${i}`} role="region" aria-labelledby={`faq-button-${i}`} hidden={openIndex !== i} className="overflow-hidden transition-all duration-350 ease-in-out" style={{ maxHeight: openIndex === i ? '300px' : '0', opacity: openIndex === i ? 1 : 0 }}>
+              <div id={`faq-panel-${i}`} role="region" aria-labelledby={`faq-button-${i}`} inert={openIndex !== i} className="overflow-hidden transition-all duration-350 ease-in-out" style={{ maxHeight: openIndex === i ? '300px' : '0', opacity: openIndex === i ? 1 : 0 }}>
                 <p className="font-inter text-base text-text-primary leading-relaxed pb-5 px-2">{faq.a}</p>
               </div>
             </div>

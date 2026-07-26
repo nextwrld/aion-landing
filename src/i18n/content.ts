@@ -4,9 +4,10 @@ export const content = {
   es: {
     navbar: {
       links: [
-        { label: "Soluciones", href: "#soluciones" },
-        { label: "Funciones", href: "#funciones" },
-        { label: "FAQs", href: "#precios" },
+        { label: "Problemas", href: "#problemas" },
+        { label: "Beneficios", href: "#beneficios" },
+        { label: "Cómo funciona", href: "#flujo" },
+        { label: "Preguntas", href: "#preguntas" },
       ],
       login: "Iniciar sesión",
       demo: "Solicitar demo",
@@ -237,8 +238,8 @@ export const content = {
   en: {
     navbar: {
       links: [
-        { label: "Problems", href: "#soluciones" },
-        { label: "Benefits", href: "#funciones" },
+        { label: "Problems", href: "#problemas" },
+        { label: "Benefits", href: "#beneficios" },
         { label: "How it works", href: "#flujo" },
         { label: "Questions", href: "#preguntas" },
       ],

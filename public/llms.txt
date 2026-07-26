@@ -1,0 +1,21 @@
+# AION Wellness
+
+> AION es el sistema que ayuda a ordenar, controlar y hacer crecer tu negocio de fitness y bienestar.
+
+## About
+AION is a web-based management system for gyms and wellness centers in Venezuela. It helps operators centralize clients, memberships, payments, access and daily cash in one place, with remote visibility and a more organized operation.
+
+## Capabilities
+- Centralized member management (search by name or cédula)
+- Membership tracking and renewals
+- Access control at the front desk
+- Daily cash closing with clear numbers
+- Remote visibility for gym owners
+
+## Contact
+- Website: https://www.aionwellness.pro/
+- Canonical: https://www.aionwellness.pro/
+
+## Languages
+- Spanish (es-VE) — primary
+- English (en-US) — alternate

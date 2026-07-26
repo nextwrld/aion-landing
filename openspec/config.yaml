@@ -1,0 +1,67 @@
+schema: spec-driven
+
+context: |
+  Project: aion-landing — marketing landing page for AION Wellness.
+  Stack: React 19, TypeScript 5.9, Vite 7, Tailwind CSS 3.4 (shadcn/ui).
+  Animations: GSAP + ScrollTrigger, Lenis smooth scroll.
+  i18n: custom I18nProvider with content.ts dictionary.
+  Contact: serverless POST endpoint (api/contact.ts) via nodemailer SMTP.
+  Structure: src/sections (Hero/PainPoints/Benefits/FrontDesk/HowItWorks/FAQ/MVP/LeadForm/Footer),
+  src/components (Navbar, BackToTop, Logo, LanguageSwitcher, ui/), src/hooks, src/i18n, src/lib.
+  No test runner registered; ad-hoc playwright-core/puppeteer debug scripts exist but are not deps.
+  Build: `tsc -b && vite build`. Lint: ESLint 9 flat config. No formatter configured.
+
+strict_tdd: false
+
+testing:
+  runner: none
+  framework: none
+  layers:
+    unit: unavailable
+    integration: unavailable
+    e2e: unavailable
+  coverage:
+    available: false
+    command: ""
+  quality:
+    linter:
+      available: true
+      command: "npm run lint"
+    type_checker:
+      available: true
+      command: "tsc -b"
+    formatter:
+      available: false
+      command: ""
+  notes:
+    - "test-playwright.mjs and test-puppeteer.cjs are debug probes, not registered tests."
+    - "Strict TDD disabled because no test runner is configured in package.json."
+
+rules:
+  proposal:
+    - Include rollback plan for risky changes
+    - Call out impact on the lead-form / SMTP contact flow when touched
+  specs:
+    - Use Given/When/Then for scenarios
+    - Use RFC 2119 keywords (MUST, SHALL, SHOULD, MAY)
+    - Scope each requirement to a section, component, hook, or the contact endpoint
+  design:
+    - Document animation/scroll (GSAP, Lenis) implications when relevant
+    - Keep i18n string additions in sync with src/i18n/content.ts
+  tasks:
+    - Group by phase, use hierarchical numbering
+    - Keep tasks completable in one session
+    - Isolate UI, hook, and endpoint changes into separate work units
+  apply:
+    guidelines:
+      - Follow existing section/component patterns under src/sections and src/components
+      - Preserve shadcn/ui conventions for src/components/ui
+    tdd: false
+    test_command: ""
+  verify:
+    test_command: ""
+    build_command: "npm run build"
+    coverage_threshold: 0
+  archive:
+    - Warn before merging destructive deltas
+    - Ensure i18n content.ts deltas are merged explicitly, not by overwrite
