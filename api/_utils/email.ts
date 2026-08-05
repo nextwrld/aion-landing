@@ -21,15 +21,8 @@ export const sendEmail = async (data: EmailPayload) => {
     ...smtpOptions,
   });
 
-  try {
-    const result = await transporter.sendMail({
-      from: process.env.EMAIL_FROM,
-      ...data,
-    });
-    console.log("✅ Email sent:", result.messageId);
-    return result;
-  } catch (error: any) {
-    console.error("❌ Email error:", error.message);
-    throw error;
-  }
+  return transporter.sendMail({
+    from: process.env.EMAIL_FROM,
+    ...data,
+  });
 };

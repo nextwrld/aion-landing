@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 import { createContext, useCallback, useContext, useEffect, useMemo, useSyncExternalStore, type ReactNode } from 'react'
 import { content, type Lang } from './content'
 
@@ -90,3 +91,4 @@ export function useI18n() {
   if (!ctx) throw new Error('useI18n must be used within I18nProvider')
   return ctx
 }
+/* eslint-disable react-refresh/only-export-components */

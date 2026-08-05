@@ -213,7 +213,11 @@ export const content = {
         miembros: "Número estimado de miembros",
         mensaje: "Contanos brevemente qué necesitás",
       },
-      membersOptions: ["Menos de 100", "100 - 400", "Más de 400"],
+      membersOptions: [
+        { value: "lt_100", label: "Menos de 100" },
+        { value: "100_400", label: "100 - 400" },
+        { value: "gt_400", label: "Más de 400" },
+      ],
       submit: "Agendar demostración",
       sending: "Enviando...",
       privacy:
@@ -446,7 +450,11 @@ export const content = {
         miembros: "Estimated number of members",
         mensaje: "Briefly tell us what you need",
       },
-      membersOptions: ["Less than 100", "100 - 400", "More than 400"],
+      membersOptions: [
+        { value: "lt_100", label: "Less than 100" },
+        { value: "100_400", label: "100 - 400" },
+        { value: "gt_400", label: "More than 400" },
+      ],
       submit: "Book demo",
       sending: "Sending...",
       privacy:
