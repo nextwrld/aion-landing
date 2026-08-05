@@ -69,6 +69,6 @@ jobs:
       - name: Run severity gate
         run: |
           python scripts/osv-severity-gate.py \
-            --lockfile landing/pnpm-lock.yaml \
+            --lockfile pnpm-lock.yaml \
             --exceptions security/osv-exceptions.toml \
             --min-severity HIGH
