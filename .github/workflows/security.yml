@@ -13,11 +13,11 @@ jobs:
     name: Security / Secrets
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
         with:
           fetch-depth: 0
       - name: Setup Python
-        uses: actions/setup-python@a26af69b475c150b16f5e7f2f0ac1d957df0da72
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
         with:
           python-version: "3.12"
       - name: Validate exception register
@@ -48,11 +48,11 @@ jobs:
     name: Security / Dependencies
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
         with:
           fetch-depth: 0
       - name: Setup Python
-        uses: actions/setup-python@a26af69b475c150b16f5e7f2f0ac1d957df0da72
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
         with:
           python-version: "3.12"
       - name: Install OSV-Scanner
