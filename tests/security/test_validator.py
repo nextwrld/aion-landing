@@ -48,6 +48,18 @@ compensating_control = "Token is publicly documented as fake."
     assert result.returncode == 0, result.stdout + result.stderr
 
 
+def test_empty_register_with_only_header_passes(tmp_path: Path) -> None:
+    register = _write(
+        tmp_path / "gitleaks.toml",
+        """
+# No exceptions yet. Real entries are added when the baseline triage
+# identifies a finding that must be explicitly allowed.
+""".strip(),
+    )
+    result = _run_validator(register, today=PINNED_TODAY)
+    assert result.returncode == 0, result.stdout + result.stderr
+
+
 def test_expired_gitleaks_exception_fails(tmp_path: Path) -> None:
     register = _write(
         tmp_path / "gitleaks.toml",

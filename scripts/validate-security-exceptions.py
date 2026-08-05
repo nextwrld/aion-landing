@@ -154,11 +154,9 @@ def _validate_entry(entry: dict[str, Any], today: _dt.date, *, where_prefix: str
 
 
 def _validate_register(payload: dict[str, Any], today: _dt.date) -> list[dict[str, Any]]:
-    exceptions = payload.get("exceptions")
-    if exceptions is None:
-        raise SystemExit("register is missing [[exceptions]] entries")
-    if not isinstance(exceptions, list) or not exceptions:
-        raise SystemExit("register must contain at least one [[exceptions]] entry")
+    exceptions = payload.get("exceptions", [])
+    if not isinstance(exceptions, list):
+        raise SystemExit("register [[exceptions]] must be a list")
     seen_ids: set[str] = set()
     validated: list[dict[str, Any]] = []
     for index, entry in enumerate(exceptions):
