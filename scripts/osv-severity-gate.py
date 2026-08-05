@@ -17,6 +17,7 @@ deliberate conservative default during the initial activation.
 from __future__ import annotations
 
 import argparse
+import datetime as _dt
 import json
 import os
 import re
@@ -201,7 +202,9 @@ def _evaluate(
                 advisory_id = vuln.get("id", "?")
                 if advisory_id in exceptions:
                     ignore_until = exceptions[advisory_id].get("ignoreUntil", "")
-                    if not ignore_until or ignore_until >= today_iso:
+                    if isinstance(ignore_until, _dt.datetime):
+                        ignore_until = ignore_until.date().isoformat()
+                    if not ignore_until or str(ignore_until) >= today_iso:
                         continue
                 severities = vuln.get("severity", []) or []
                 best = "UNKNOWN"
