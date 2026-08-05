@@ -1,0 +1,160 @@
+# OSV-Scanner exception register.
+#
+# Each entry was generated from the initial baseline triage. All
+# listed advisories have NO fixed version available. Each entry MUST
+# be reviewed within the expiry date and either remediated, rewritten
+# with new evidence, or removed.
+
+[[IgnoredVulns]]
+id = 'GHSA-fv7c-fp4j-7gwp'
+ignoreUntil = 2026-09-04T00:00:00Z
+reason = "NEX-50: @babel/plugin-transform-modules-systemjs generates arbitrary code when compiling malicious input"
+
+[[governance]]
+id = 'GHSA-fv7c-fp4j-7gwp'
+owner = 'gapfware'
+tracking_issue = 'NEX-50'
+compensating_control = "No fixed version available. Baseline triage in progress; reviewed monthly."
+
+[[IgnoredVulns]]
+id = 'GHSA-3jxr-9vmj-r5cp'
+ignoreUntil = 2026-09-04T00:00:00Z
+reason = "NEX-50: brace-expansion: DoS via exponential-time expansion of consecutive non-expanding {} groups"
+
+[[governance]]
+id = 'GHSA-3jxr-9vmj-r5cp'
+owner = 'gapfware'
+tracking_issue = 'NEX-50'
+compensating_control = "No fixed version available. Baseline triage in progress; reviewed monthly."
+
+[[IgnoredVulns]]
+id = 'GHSA-mh99-v99m-4gvg'
+ignoreUntil = 2026-09-04T00:00:00Z
+reason = "NEX-50: brace-expansion: DoS via unbounded expansion length causing an out-of-memory process crash"
+
+[[governance]]
+id = 'GHSA-mh99-v99m-4gvg'
+owner = 'gapfware'
+tracking_issue = 'NEX-50'
+compensating_control = "No fixed version available. Baseline triage in progress; reviewed monthly."
+
+[[IgnoredVulns]]
+id = 'GHSA-rgw5-rvv9-x895'
+ignoreUntil = 2026-09-04T00:00:00Z
+reason = "NEX-50: brace-expansion: DoS via unbounded intermediate arrays, bypassing the CVE-2026-14257 mitigation"
+
+[[governance]]
+id = 'GHSA-rgw5-rvv9-x895'
+owner = 'gapfware'
+tracking_issue = 'NEX-50'
+compensating_control = "No fixed version available. Baseline triage in progress; reviewed monthly."
+
+[[IgnoredVulns]]
+id = 'GHSA-3jxr-9vmj-r5cp'
+ignoreUntil = 2026-09-04T00:00:00Z
+reason = "NEX-50: brace-expansion: DoS via exponential-time expansion of consecutive non-expanding {} groups"
+
+[[governance]]
+id = 'GHSA-3jxr-9vmj-r5cp'
+owner = 'gapfware'
+tracking_issue = 'NEX-50'
+compensating_control = "No fixed version available. Baseline triage in progress; reviewed monthly."
+
+[[IgnoredVulns]]
+id = 'GHSA-mh99-v99m-4gvg'
+ignoreUntil = 2026-09-04T00:00:00Z
+reason = "NEX-50: brace-expansion: DoS via unbounded expansion length causing an out-of-memory process crash"
+
+[[governance]]
+id = 'GHSA-mh99-v99m-4gvg'
+owner = 'gapfware'
+tracking_issue = 'NEX-50'
+compensating_control = "No fixed version available. Baseline triage in progress; reviewed monthly."
+
+[[IgnoredVulns]]
+id = 'GHSA-rgw5-rvv9-x895'
+ignoreUntil = 2026-09-04T00:00:00Z
+reason = "NEX-50: brace-expansion: DoS via unbounded intermediate arrays, bypassing the CVE-2026-14257 mitigation"
+
+[[governance]]
+id = 'GHSA-rgw5-rvv9-x895'
+owner = 'gapfware'
+tracking_issue = 'NEX-50'
+compensating_control = "No fixed version available. Baseline triage in progress; reviewed monthly."
+
+[[IgnoredVulns]]
+id = 'GHSA-52cp-r559-cp3m'
+ignoreUntil = 2026-09-04T00:00:00Z
+reason = "NEX-50: js-yaml: YAML merge-key chains can force quadratic CPU consumption"
+
+[[governance]]
+id = 'GHSA-52cp-r559-cp3m'
+owner = 'gapfware'
+tracking_issue = 'NEX-50'
+compensating_control = "No fixed version available. Baseline triage in progress; reviewed monthly."
+
+[[IgnoredVulns]]
+id = 'GHSA-c7w3-x93f-qmm8'
+ignoreUntil = 2026-09-04T00:00:00Z
+reason = "NEX-50: Nodemailer has SMTP command injection due to unsanitized `envelope.size` parameter"
+
+[[governance]]
+id = 'GHSA-c7w3-x93f-qmm8'
+owner = 'gapfware'
+tracking_issue = 'NEX-50'
+compensating_control = "No fixed version available. Baseline triage in progress; reviewed monthly."
+
+[[IgnoredVulns]]
+id = 'GHSA-p6gq-j5cr-w38f'
+ignoreUntil = 2026-09-04T00:00:00Z
+reason = "NEX-50: Nodemailer: Message-level raw option bypasses disableFileAccess/disableUrlAccess, enabling arbitrary file read and full-response SSRF in the delivered message"
+
+[[governance]]
+id = 'GHSA-p6gq-j5cr-w38f'
+owner = 'gapfware'
+tracking_issue = 'NEX-50'
+compensating_control = "No fixed version available. Baseline triage in progress; reviewed monthly."
+
+[[IgnoredVulns]]
+id = 'GHSA-8x6r-g9mw-2r78'
+ignoreUntil = 2026-09-04T00:00:00Z
+reason = "NEX-50: React Router vulnerable to DoS via unbounded path expansion in __manifest endpoint"
+
+[[governance]]
+id = 'GHSA-8x6r-g9mw-2r78'
+owner = 'gapfware'
+tracking_issue = 'NEX-50'
+compensating_control = "No fixed version available. Baseline triage in progress; reviewed monthly."
+
+[[IgnoredVulns]]
+id = 'GHSA-chx6-hx7r-mcp5'
+ignoreUntil = 2026-09-04T00:00:00Z
+reason = "NEX-50: React Router: Unauthenticated Denial of Service via Inefficient Route Matching"
+
+[[governance]]
+id = 'GHSA-chx6-hx7r-mcp5'
+owner = 'gapfware'
+tracking_issue = 'NEX-50'
+compensating_control = "No fixed version available. Baseline triage in progress; reviewed monthly."
+
+[[IgnoredVulns]]
+id = 'GHSA-qwww-vcr4-c8h2'
+ignoreUntil = 2026-09-04T00:00:00Z
+reason = "NEX-50: React Router: RSC Mode CSRF Bypass Allows Action Execution Before 400 Response"
+
+[[governance]]
+id = 'GHSA-qwww-vcr4-c8h2'
+owner = 'gapfware'
+tracking_issue = 'NEX-50'
+compensating_control = "No fixed version available. Baseline triage in progress; reviewed monthly."
+
+[[IgnoredVulns]]
+id = 'GHSA-wrjc-x8rr-h8h6'
+ignoreUntil = 2026-09-04T00:00:00Z
+reason = "NEX-50: React Router: Open redirect via backslash in <Link> and useNavigate (CVE-2025-68470 bypass)"
+
+[[governance]]
+id = 'GHSA-wrjc-x8rr-h8h6'
+owner = 'gapfware'
+tracking_issue = 'NEX-50'
+compensating_control = "No fixed version available. Baseline triage in progress; reviewed monthly."

@@ -1,0 +1,9 @@
+# Gitleaks exception register.
+#
+# Each entry MUST be exactly one rule/path match with all required
+# metadata enforced by ``scripts/validate-security-exceptions.py``.
+# Expired, malformed, overbroad, or non-matching entries MUST fail
+# validation and block the ``Security / Secrets`` check.
+#
+# The validator generates a temporary ``.gitleaksignore`` for the
+# scanner. Do NOT hand-edit that file; it is regenerated on every run.
