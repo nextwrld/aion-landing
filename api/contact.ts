@@ -1,76 +1,81 @@
-import nodemailer from "nodemailer";
+import { contactSchema, renderContactEmail } from "./_utils/contact.js";
+import { sendEmail } from "./_utils/email.js";
 
-type EmailPayload = {
-  to: string;
-  subject: string;
-  html: string;
+const MAX_BODY_BYTES = 16 * 1024;
+const PROVIDER_ERROR = "Unable to send message. Please try again later.";
+
+type Request = {
+  method?: string;
+  body?: unknown;
+  headers: Record<string, string | string[] | undefined>;
 };
 
-const smtpOptions = {
-  host: process.env.EMAIL_SERVER_HOST,
-  port: parseInt(process.env.EMAIL_SERVER_PORT || "465"),
-  secure: parseInt(process.env.EMAIL_SERVER_PORT || "465") === 465,
-  auth: {
-    user: process.env.EMAIL_SERVER_USER,
-    pass: process.env.EMAIL_SERVER_PASSWORD,
-  },
+type Response = {
+  status(code: number): Response;
+  json(body: unknown): Response;
 };
 
-const sendEmail = async (data: EmailPayload) => {
-  const transporter = nodemailer.createTransport({
-    ...smtpOptions,
-  });
+type SendEmail = typeof sendEmail;
 
-  const result = await transporter.sendMail({
-    from: process.env.EMAIL_FROM,
-    ...data,
-  });
+function header(req: Request, name: string): string | undefined {
+  const value = req.headers[name];
+  return Array.isArray(value) ? value[0] : value;
+}
 
-  return result;
-};
+function isPlainObject(value: unknown): value is Record<string, unknown> {
+  if (value === null || typeof value !== "object") return false;
+  const prototype = Object.getPrototypeOf(value);
+  return prototype === Object.prototype || prototype === null;
+}
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
-export default async function handler(req: any, res: any) {
-  if (req.method !== "POST") {
-    return res.status(405).json({ error: "Method not allowed" });
-  }
-
-  try {
-    const { fullName, email, phone, gymName, members, message } = req.body || {};
-
-    if (!fullName || !email || !message) {
-      return res.status(400).json({ error: "Missing required fields" });
+export function createContactHandler(send: SendEmail = sendEmail) {
+  return async function handler(req: Request, res: Response) {
+    if (req.method !== "POST") {
+      return res.status(405).json({ error: "Method not allowed" });
     }
 
-    const emailHtml = `
-      <div style="font-family: Inter, Arial, sans-serif; max-width: 640px; margin: 0 auto; color: #0f172a;">
-        <h2 style="margin: 0 0 16px; color: #0b3b8f;">Solicitud de DEMO y contacto para usar AION Wellness</h2>
-        <p style="margin: 0 0 20px; color: #334155;">Llegó un nuevo interesado desde el formulario web.</p>
+    const contentType = header(req, "content-type");
+    if (!contentType || !/^application\/json(?:\s*;\s*charset=[^;\s]+)?$/i.test(contentType)) {
+      return res.status(415).json({ error: "Content-Type must be application/json" });
+    }
 
-        <div style="border: 1px solid #e2e8f0; border-radius: 12px; padding: 16px; background: #f8fafc;">
-          <p style="margin: 0 0 10px;"><strong>Nombre:</strong> ${fullName}</p>
-          <p style="margin: 0 0 10px;"><strong>Email:</strong> ${email}</p>
-          <p style="margin: 0 0 10px;"><strong>Teléfono:</strong> ${phone || "No informado"}</p>
-          <p style="margin: 0 0 10px;"><strong>Gimnasio:</strong> ${gymName || "No informado"}</p>
-          <p style="margin: 0 0 10px;"><strong>Miembros:</strong> ${members || "No informado"}</p>
-          <p style="margin: 0 0 6px;"><strong>Mensaje:</strong></p>
-          <div style="white-space: pre-wrap; line-height: 1.5; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px;">${message}</div>
-        </div>
-      </div>
-    `;
+    const declaredLength = header(req, "content-length");
+    if (declaredLength !== undefined) {
+      const parsedLength = Number(declaredLength);
+      if (!Number.isSafeInteger(parsedLength) || parsedLength < 0) {
+        return res.status(400).json({ error: "Invalid Content-Length" });
+      }
+      if (parsedLength > MAX_BODY_BYTES) {
+        return res.status(413).json({ error: "Request body too large" });
+      }
+    }
 
-    await sendEmail({
-      to: process.env.EMAIL_FROM || "contact@nextwrld.com",
-      subject: `Solicitud de DEMO AION WELLNESS y contacto: ${fullName}`,
-      html: emailHtml,
-    });
+    if (!isPlainObject(req.body)) {
+      return res.status(400).json({ error: "Invalid request body" });
+    }
+
+    if (Buffer.byteLength(JSON.stringify(req.body), "utf8") > MAX_BODY_BYTES) {
+      return res.status(413).json({ error: "Request body too large" });
+    }
+
+    const result = contactSchema.safeParse(req.body);
+    if (!result.success) {
+      return res.status(400).json({ error: "Invalid request body" });
+    }
+
+    try {
+      await send({
+        to: process.env.EMAIL_FROM || "contact@nextwrld.com",
+        subject: `Solicitud de DEMO AION WELLNESS y contacto: ${result.data.fullName}`,
+        html: renderContactEmail(result.data),
+      });
+    } catch {
+      console.error({ event: "contact_email_provider_failure" });
+      return res.status(502).json({ error: PROVIDER_ERROR });
+    }
 
     return res.status(200).json({ success: true, message: "Email sent successfully" });
-  } catch (error: any) {
-    return res.status(500).json({
-      error: "Failed to send email",
-      details: error.message,
-    });
-  }
+  };
 }
-/* eslint-enable @typescript-eslint/no-explicit-any */
+
+export default createContactHandler();
