@@ -1,0 +1,74 @@
+name: Security
+
+on:
+  pull_request:
+  push:
+    branches: [main, uat]
+
+permissions:
+  contents: read
+
+jobs:
+  secrets:
+    name: Security / Secrets
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          fetch-depth: 0
+      - name: Setup Python
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: "3.12"
+      - name: Validate exception register
+        run: python scripts/validate-security-exceptions.py --register security/gitleaks-exceptions.toml
+      - name: Install Gitleaks
+        env:
+          GITLEAKS_VERSION: 8.30.1
+          GITLEAKS_SHA256_LINUX_AMD64: 551f6fc83ea457d62a0d98237cbad105af8d557003051f41f3e7ca7b3f2470eb
+        run: |
+          set -euo pipefail
+          url="https://github.com/gitleaks/gitleaks/releases/download/v${GITLEAKS_VERSION}/gitleaks_${GITLEAKS_VERSION}_linux_x64.tar.gz"
+          tmp="$(mktemp -d)"
+          curl -sSL "$url" -o "$tmp/gitleaks.tar.gz"
+          echo "${GITLEAKS_SHA256_LINUX_AMD64}  $tmp/gitleaks.tar.gz" | sha256sum -c -
+          tar -xzf "$tmp/gitleaks.tar.gz" -C "$tmp"
+          sudo install -m 0755 "$tmp/gitleaks" /usr/local/bin/gitleaks
+      - name: Scan with Gitleaks
+        run: |
+          gitleaks dir . \
+            --config .gitleaks.toml \
+            --gitleaks-ignore-path security/.gitleaksignore \
+            --no-banner \
+            --redact 100 \
+            --report-format sarif \
+            --report-path /tmp/gitleaks.sarif || (cat /tmp/gitleaks.sarif && exit 1)
+
+  dependencies:
+    name: Security / Dependencies
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          fetch-depth: 0
+      - name: Setup Python
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: "3.12"
+      - name: Install OSV-Scanner
+        env:
+          OSV_SCANNER_VERSION: 2.4.0
+          OSV_SCANNER_SHA256_LINUX_AMD64: 15314940c10d26af9c6649f150b8a47c1262e8fc7e17b1d1029b0e479e8ed8a0
+        run: |
+          set -euo pipefail
+          url="https://github.com/google/osv-scanner/releases/download/v${OSV_SCANNER_VERSION}/osv-scanner_linux_amd64"
+          tmp="$(mktemp -d)"
+          curl -sSL "$url" -o "$tmp/osv-scanner"
+          echo "${OSV_SCANNER_SHA256_LINUX_AMD64}  $tmp/osv-scanner" | sha256sum -c -
+          sudo install -m 0755 "$tmp/osv-scanner" /usr/local/bin/osv-scanner
+      - name: Run severity gate
+        run: |
+          python scripts/osv-severity-gate.py \
+            --lockfile pnpm-lock.yaml \
+            --exceptions security/osv-exceptions.toml \
+            --min-severity HIGH

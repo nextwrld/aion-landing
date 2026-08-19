@@ -1,0 +1,26 @@
+# Gitleaks configuration for the AION superproject root.
+#
+# This file extends the Gitleaks default ruleset. The superproject CI
+# uses it to scan root-owned files. Submodule directories are excluded
+# because each child repository runs its own dedicated security job
+# against its own pinned snapshot (see openspec/changes/nex-50).
+
+[extend]
+useDefault = true
+
+# Submodules are versioned independently and scanned by their own CI.
+[[allowlists]]
+description = "Submodules are scanned by their own security jobs"
+paths = [
+  '''backend/.*''',
+  '''web/.*''',
+  '''landing/.*''',
+]
+
+# Generated ignore file produced by scripts/validate-security-exceptions.py.
+[[allowlists]]
+description = "Generated Gitleaks ignore file"
+paths = [
+  '''security/\.gitleaksignore''',
+  '''security/osv-scanner\.generated\.toml''',
+]
