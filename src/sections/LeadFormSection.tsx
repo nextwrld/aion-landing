@@ -3,48 +3,26 @@ import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { Check, User, Building2, Mail, Phone, Loader2 } from 'lucide-react';
 import { useI18n } from '../i18n/I18nProvider';
+import TurnstileWidget, { type TurnstileWidgetHandle } from '../components/TurnstileWidget';
 
 gsap.registerPlugin(ScrollTrigger);
 
 type FormState = 'idle' | 'submitting' | 'success' | 'error';
+type SubmitErrorKind = 'rateLimited' | 'verificationError' | 'error';
 
-type LeadFormData = {
-  nombre: string;
-  gimnasio: string;
-  email: string;
-  telefono: string;
-  miembros: string;
-  mensaje: string;
-};
-
-async function submitLeadForm(data: LeadFormData) {
-  const payload = {
-    fullName: data.nombre,
-    email: data.email,
-    phone: data.telefono,
-    gymName: data.gimnasio,
-    members: data.miembros,
-    message: data.mensaje,
-  };
-
-  const response = await fetch('/api/contact', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload),
-  });
-
-  const result = await response.json();
-
-  if (!response.ok) {
-    throw new Error(result?.error || 'Failed to send message');
-  }
-}
+const TURNSTILE_ENABLED = import.meta.env.VITE_TURNSTILE_ENABLED === 'true';
+const TURNSTILE_SITE_KEY = import.meta.env.VITE_TURNSTILE_SITE_KEY as string | undefined;
+const TURNSTILE_ACTIVE = TURNSTILE_ENABLED && Boolean(TURNSTILE_SITE_KEY);
 
 export default function LeadFormSection() {
   const { c } = useI18n()
   const sectionRef = useRef<HTMLElement>(null);
+  const turnstileRef = useRef<TurnstileWidgetHandle>(null);
   const [formState, setFormState] = useState<FormState>('idle');
+  const [submitErrorKind, setSubmitErrorKind] = useState<SubmitErrorKind | null>(null);
   const [formData, setFormData] = useState({ nombre: '', gimnasio: '', email: '', telefono: '', miembros: '', mensaje: '' });
+  const [honeypot, setHoneypot] = useState('');
+  const [turnstileToken, setTurnstileToken] = useState('');
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   useEffect(() => {
@@ -74,15 +52,64 @@ export default function LeadFormSection() {
     e.preventDefault();
     if (!validate()) return;
     setFormState('submitting');
+    setSubmitErrorKind(null);
+
+    const payload: Record<string, string> = {
+      fullName: formData.nombre,
+      email: formData.email,
+      phone: formData.telefono,
+      gymName: formData.gimnasio,
+      members: formData.miembros,
+      message: formData.mensaje,
+      website: honeypot,
+    };
+    if (turnstileToken) {
+      payload.turnstileToken = turnstileToken;
+    }
 
     try {
-      await submitLeadForm(formData);
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+
+      let result: { code?: string; success?: boolean } = {};
+      try {
+        result = (await response.json()) as typeof result;
+      } catch {
+        result = {};
+      }
+
+      if (!response.ok) {
+        const code = result.code ?? '';
+        if (response.status === 429 || code === 'rate_limited') {
+          setSubmitErrorKind('rateLimited');
+        } else if (response.status === 403 || code === 'verification_failed') {
+          setSubmitErrorKind('verificationError');
+        } else {
+          setSubmitErrorKind('error');
+        }
+        setFormState('error');
+        // Reset widget/token after failed attempt (tokens are single-use)
+        setTurnstileToken('');
+        turnstileRef.current?.reset();
+        return;
+      }
+
       setFormState('success');
       setFormData({ nombre: '', gimnasio: '', email: '', telefono: '', miembros: '', mensaje: '' });
+      setHoneypot('');
       setErrors({});
+      setSubmitErrorKind(null);
+      setTurnstileToken('');
+      turnstileRef.current?.reset();
     } catch (error) {
       console.error('Lead form submission error', error);
+      setSubmitErrorKind('error');
       setFormState('error');
+      setTurnstileToken('');
+      turnstileRef.current?.reset();
     }
   };
 
@@ -90,6 +117,15 @@ export default function LeadFormSection() {
     setFormData((prev) => ({ ...prev, [field]: value }));
     if (errors[field]) setErrors((prev) => { const next = { ...prev }; delete next[field]; return next; });
   };
+
+  const isSubmitDisabled = formState === 'submitting' || (TURNSTILE_ACTIVE && !turnstileToken);
+
+  const errorMessage =
+    submitErrorKind === 'rateLimited'
+      ? c.leadForm.rateLimited
+      : submitErrorKind === 'verificationError'
+        ? c.leadForm.verificationError
+        : c.leadForm.error;
 
   return (
     <section ref={sectionRef} id="demo" aria-labelledby="demo-heading" className="gradient-cta py-16 sm:py-20 lg:py-[100px]">
@@ -107,7 +143,7 @@ export default function LeadFormSection() {
             ) : (
               <>
                 <h3 className="font-sora font-semibold text-xl text-deep-blue mb-6">{c.leadForm.formTitle}</h3>
-                {formState === 'error' && <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-[10px]"><p className="font-inter text-sm text-red-600">{c.leadForm.error}</p></div>}
+                {formState === 'error' && <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-[10px]"><p className="font-inter text-sm text-red-600">{errorMessage}</p></div>}
 
                 <form onSubmit={handleSubmit} className="flex flex-col gap-4" noValidate>
                   <div className="lf-field relative"><label htmlFor="lf-nombre" className="sr-only">{c.leadForm.placeholders.nombre}</label><User className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-text-light" aria-hidden="true" /><input id="lf-nombre" type="text" name="nombre" placeholder={c.leadForm.placeholders.nombre} value={formData.nombre} onChange={(e) => handleChange('nombre', e.target.value)} className={`w-full pl-10 pr-4 py-3.5 border-[1.5px] rounded-[10px] font-inter text-sm outline-none transition-all focus:border-wellness focus:ring-[3px] focus:ring-wellness/10 ${errors.nombre ? 'border-red-400' : 'border-border-custom'}`} aria-invalid={Boolean(errors.nombre)} />{errors.nombre && <p className="text-xs text-red-500 mt-1" role="alert">{errors.nombre}</p>}</div>
@@ -118,7 +154,44 @@ export default function LeadFormSection() {
 
                   <div className="lf-field"><label htmlFor="lf-mensaje" className="sr-only">{c.leadForm.placeholders.mensaje}</label><textarea id="lf-mensaje" name="mensaje" placeholder={c.leadForm.placeholders.mensaje} value={formData.mensaje} onChange={(e) => handleChange('mensaje', e.target.value)} rows={4} className={`w-full px-4 py-3.5 border-[1.5px] rounded-[10px] font-inter text-sm outline-none transition-all resize-none focus:border-wellness focus:ring-[3px] focus:ring-wellness/10 ${errors.mensaje ? 'border-red-400' : 'border-border-custom'}`} aria-invalid={Boolean(errors.mensaje)} />{errors.mensaje && <p className="text-xs text-red-500 mt-1" role="alert">{errors.mensaje}</p>}</div>
 
-                  <button type="submit" disabled={formState === 'submitting'} className="lf-field w-full bg-deep-blue text-white font-inter text-[15px] font-semibold py-4 rounded-[10px] shadow-[0_4px_12px_rgba(15,23,42,0.2)] hover:bg-[#1E293B] hover:-translate-y-0.5 hover:shadow-[0_6px_20px_rgba(15,23,42,0.3)] active:translate-y-0 transition-all duration-200 disabled:opacity-80 flex items-center justify-center gap-2 mt-2">{formState === 'submitting' ? <><Loader2 className="w-5 h-5 animate-spin" />{c.leadForm.sending}</> : c.leadForm.submit}</button>
+                  {/* Honeypot — offscreen, never display:none, not .lf-field, hidden from AT, tabIndex -1 */}
+                  <div
+                    aria-hidden="true"
+                    style={{
+                      position: 'absolute',
+                      left: '-5000px',
+                      top: 'auto',
+                      width: '1px',
+                      height: '1px',
+                      overflow: 'hidden',
+                    }}
+                  >
+                    <label htmlFor="lf-website">Website</label>
+                    <input
+                      id="lf-website"
+                      type="text"
+                      name="website"
+                      value={honeypot}
+                      onChange={(e) => setHoneypot(e.target.value)}
+                      tabIndex={-1}
+                      autoComplete="off"
+                      aria-hidden="true"
+                    />
+                  </div>
+
+                  {TURNSTILE_ACTIVE ? (
+                    <div style={{ minHeight: '65px' }}>
+                      <TurnstileWidget
+                        ref={turnstileRef}
+                        siteKey={TURNSTILE_SITE_KEY!}
+                        onToken={(token) => setTurnstileToken(token)}
+                        onExpire={() => setTurnstileToken('')}
+                        onError={() => setTurnstileToken('')}
+                      />
+                    </div>
+                  ) : null}
+
+                  <button type="submit" disabled={isSubmitDisabled} className="lf-field w-full bg-deep-blue text-white font-inter text-[15px] font-semibold py-4 rounded-[10px] shadow-[0_4px_12px_rgba(15,23,42,0.2)] hover:bg-[#1E293B] hover:-translate-y-0.5 hover:shadow-[0_6px_20px_rgba(15,23,42,0.3)] active:translate-y-0 transition-all duration-200 disabled:opacity-80 flex items-center justify-center gap-2 mt-2">{formState === 'submitting' ? <><Loader2 className="w-5 h-5 animate-spin" />{c.leadForm.sending}</> : c.leadForm.submit}</button>
                   <p className="text-center font-inter text-xs text-text-secondary mt-1">{c.leadForm.privacy}</p>
                 </form>
               </>
