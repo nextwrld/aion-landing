@@ -1,0 +1,38 @@
+# Cloudflare Workers — aion-landing-contact (NEX-48)
+# See README.md runbook for deployment, secrets, kill-switches and rollback.
+# No nodejs_compat — the Worker uses only fetch / Web APIs (Postmark via HTTPS).
+
+name = "aion-landing-contact"
+main = "api/contact.ts"
+compatibility_date = "2026-08-20"
+
+# ── KV namespaces ────────────────────────────────────────────────────────────
+# TODO(owner): replace placeholder IDs with real KV namespace IDs before first deploy.
+# Create with: wrangler kv namespace create CONTACT_RATE_LIMIT_KV  (and --preview)
+# Then copy the returned `id` / `preview_id` below. Preview and production MUST be distinct.
+[[kv_namespaces]]
+binding = "CONTACT_RATE_LIMIT_KV"
+# TODO: replace with production KV id
+id = "REPLACE_WITH_PRODUCTION_KV_ID"
+# TODO: replace with preview KV id
+preview_id = "REPLACE_WITH_PREVIEW_KV_ID"
+
+# ── Non-secret vars ──────────────────────────────────────────────────────────
+[vars]
+CONTACT_ANTIBOT_ENABLED = "true"
+CONTACT_RATE_LIMIT_ENABLED = "true"
+RATE_LIMIT_MAX = "5"
+RATE_LIMIT_WINDOW_SECONDS = "900"
+TURNSTILE_VERIFY_TIMEOUT_MS = "5000"
+EMAIL_HEADERS_TIMEOUT_MS = "10000"
+EMAIL_TOTAL_TIMEOUT_MS = "20000"
+EMAIL_FROM = "contact@nextwrld.com"
+EMAIL_TO = "contact@nextwrld.com"
+POSTMARK_MESSAGE_STREAM = "outbound"
+
+# Secrets (never in this file):
+#   TURNSTILE_SECRET_KEY
+#   POSTMARK_SERVER_TOKEN
+#   CONTACT_IP_HASH_KEY
+# Set with: wrangler secret put <NAME>
+# Local dev: copy .dev.vars.example → .dev.vars (gitignored)

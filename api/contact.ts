@@ -1,81 +1,99 @@
-import { contactSchema, renderContactEmail } from "./_utils/contact.js";
-import { sendEmail } from "./_utils/email.js";
+import { createContactHandler } from "./contact/handler";
+import { PostmarkEmailDelivery } from "./contact/email-delivery";
+import { createJsonLogger } from "./contact/logging";
+import { getOriginInfo } from "./contact/origin";
+import {
+  WorkersKvRateLimiter,
+  parseRateLimitEnabled,
+  parsePositiveInt,
+} from "./contact/rate-limiter";
+import {
+  NoOpAntiBotVerifier,
+  TurnstileVerifier,
+  parseAntibotEnabled,
+  parseVerifyTimeoutMs,
+} from "./contact/antibot";
 
-const MAX_BODY_BYTES = 16 * 1024;
-const PROVIDER_ERROR = "Unable to send message. Please try again later.";
-
-type Request = {
-  method?: string;
-  body?: unknown;
-  headers: Record<string, string | string[] | undefined>;
-};
-
-type Response = {
-  status(code: number): Response;
-  json(body: unknown): Response;
-};
-
-type SendEmail = typeof sendEmail;
-
-function header(req: Request, name: string): string | undefined {
-  const value = req.headers[name];
-  return Array.isArray(value) ? value[0] : value;
+export interface Env {
+  CONTACT_RATE_LIMIT_KV?: KVNamespace;
+  CONTACT_ANTIBOT_ENABLED?: string;
+  CONTACT_RATE_LIMIT_ENABLED?: string;
+  RATE_LIMIT_MAX?: string;
+  RATE_LIMIT_WINDOW_SECONDS?: string;
+  TURNSTILE_SECRET_KEY?: string;
+  CONTACT_IP_HASH_KEY?: string;
+  POSTMARK_SERVER_TOKEN?: string;
+  POSTMARK_MESSAGE_STREAM?: string;
+  EMAIL_FROM?: string;
+  EMAIL_TO?: string;
+  EMAIL_HEADERS_TIMEOUT_MS?: string;
+  EMAIL_TOTAL_TIMEOUT_MS?: string;
+  TURNSTILE_VERIFY_TIMEOUT_MS?: string;
 }
 
-function isPlainObject(value: unknown): value is Record<string, unknown> {
-  if (value === null || typeof value !== "object") return false;
-  const prototype = Object.getPrototypeOf(value);
-  return prototype === Object.prototype || prototype === null;
+function parseNumber(value: string | undefined, fallback: number): number {
+  if (!value) return fallback;
+  const n = Number.parseInt(value, 10);
+  return Number.isFinite(n) && n > 0 ? n : fallback;
 }
 
-export function createContactHandler(send: SendEmail = sendEmail) {
-  return async function handler(req: Request, res: Response) {
-    if (req.method !== "POST") {
-      return res.status(405).json({ error: "Method not allowed" });
-    }
+export function createDependencies(env: Env, _ctx: ExecutionContext) {
+  void _ctx;
+  const headersTimeoutMs = parseNumber(env.EMAIL_HEADERS_TIMEOUT_MS, 10_000);
+  const totalTimeoutMs = parseNumber(env.EMAIL_TOTAL_TIMEOUT_MS, 20_000);
 
-    const contentType = header(req, "content-type");
-    if (!contentType || !/^application\/json(?:\s*;\s*charset=[^;\s]+)?$/i.test(contentType)) {
-      return res.status(415).json({ error: "Content-Type must be application/json" });
-    }
+  const delivery = new PostmarkEmailDelivery({
+    serverToken: env.POSTMARK_SERVER_TOKEN,
+    messageStream: env.POSTMARK_MESSAGE_STREAM ?? "outbound",
+    headersTimeoutMs,
+    totalTimeoutMs,
+  });
 
-    const declaredLength = header(req, "content-length");
-    if (declaredLength !== undefined) {
-      const parsedLength = Number(declaredLength);
-      if (!Number.isSafeInteger(parsedLength) || parsedLength < 0) {
-        return res.status(400).json({ error: "Invalid Content-Length" });
-      }
-      if (parsedLength > MAX_BODY_BYTES) {
-        return res.status(413).json({ error: "Request body too large" });
-      }
-    }
+  // Fase 4 — Anti-bot verifier wiring (kill-switch CONTACT_ANTIBOT_ENABLED)
+  const antibotEnabled = parseAntibotEnabled(env.CONTACT_ANTIBOT_ENABLED, true);
+  const verifyTimeoutMs = parseVerifyTimeoutMs(env.TURNSTILE_VERIFY_TIMEOUT_MS, 5_000);
+  const verifier = antibotEnabled
+    ? new TurnstileVerifier({
+        secret: env.TURNSTILE_SECRET_KEY,
+        timeoutMs: verifyTimeoutMs,
+      })
+    : new NoOpAntiBotVerifier();
 
-    if (!isPlainObject(req.body)) {
-      return res.status(400).json({ error: "Invalid request body" });
-    }
+  // Fase 3 — Rate limiter wiring (kill-switch CONTACT_RATE_LIMIT_ENABLED)
+  const rateLimitEnabled = parseRateLimitEnabled(env.CONTACT_RATE_LIMIT_ENABLED, true);
+  const rateLimitMax = parsePositiveInt(env.RATE_LIMIT_MAX, 5);
+  const rateLimitWindowSeconds = parsePositiveInt(env.RATE_LIMIT_WINDOW_SECONDS, 900);
+  const limiter = new WorkersKvRateLimiter({
+    kv: env.CONTACT_RATE_LIMIT_KV,
+    enabled: rateLimitEnabled,
+    limit: rateLimitMax,
+    windowSeconds: rateLimitWindowSeconds,
+  });
 
-    if (Buffer.byteLength(JSON.stringify(req.body), "utf8") > MAX_BODY_BYTES) {
-      return res.status(413).json({ error: "Request body too large" });
-    }
-
-    const result = contactSchema.safeParse(req.body);
-    if (!result.success) {
-      return res.status(400).json({ error: "Invalid request body" });
-    }
-
-    try {
-      await send({
-        to: process.env.EMAIL_FROM || "contact@nextwrld.com",
-        subject: `Solicitud de DEMO AION WELLNESS y contacto: ${result.data.fullName}`,
-        html: renderContactEmail(result.data),
-      });
-    } catch {
-      console.error({ event: "contact_email_provider_failure" });
-      return res.status(502).json({ error: PROVIDER_ERROR });
-    }
-
-    return res.status(200).json({ success: true, message: "Email sent successfully" });
+  return {
+    delivery,
+    emailFrom: env.EMAIL_FROM ?? "",
+    emailTo: env.EMAIL_TO ?? env.EMAIL_FROM ?? "contact@nextwrld.com",
+    verifier,
+    limiter,
+    rateLimit: { limit: rateLimitMax, windowSeconds: rateLimitWindowSeconds },
+    createLogger: (requestId: string) => createJsonLogger(requestId),
+    getOriginInfo: (req: Request) => getOriginInfo(req, env.CONTACT_IP_HASH_KEY),
+    hashKey: env.CONTACT_IP_HASH_KEY,
   };
 }
 
-export default createContactHandler();
+export default {
+  async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
+    const url = new URL(request.url);
+    if (url.pathname !== "/api/contact") {
+      return new Response(JSON.stringify({ success: false, code: "not_found" }), {
+        status: 404,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+    const deps = createDependencies(env, ctx);
+    const handler = createContactHandler(deps);
+    return handler(request);
+  },
+};
