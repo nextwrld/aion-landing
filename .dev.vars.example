@@ -1,0 +1,16 @@
+# Local Worker secrets — copy to .dev.vars (gitignored) for `wrangler dev` / `wrangler deploy --dry-run`
+# Never commit real values. Set production secrets with `wrangler secret put <NAME>`.
+# See README.md runbook.
+
+TURNSTILE_SECRET_KEY=
+POSTMARK_SERVER_TOKEN=
+CONTACT_IP_HASH_KEY=
+
+# Optional overrides for local preview (if different from wrangler.toml [vars]):
+# CONTACT_ANTIBOT_ENABLED=true
+# CONTACT_RATE_LIMIT_ENABLED=true
+# RATE_LIMIT_MAX=5
+# RATE_LIMIT_WINDOW_SECONDS=900
+# EMAIL_FROM=contact@nextwrld.com
+# EMAIL_TO=contact@nextwrld.com
+# POSTMARK_MESSAGE_STREAM=outbound

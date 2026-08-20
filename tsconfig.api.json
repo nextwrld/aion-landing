@@ -4,7 +4,7 @@
     "target": "ES2023",
     "lib": ["ES2023"],
     "module": "ESNext",
-    "types": ["node", "vitest/globals"],
+    "types": ["node", "vitest/globals", "@cloudflare/workers-types"],
     "skipLibCheck": true,
     "moduleResolution": "bundler",
     "verbatimModuleSyntax": true,
@@ -17,5 +17,6 @@
     "noFallthroughCasesInSwitch": true,
     "noUncheckedSideEffectImports": true
   },
-  "include": ["api/**/*.ts"]
+  "include": ["api/**/*.ts"],
+  "exclude": ["api/contact.test.ts"]
 }

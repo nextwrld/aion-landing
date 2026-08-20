@@ -119,9 +119,6 @@ importers:
       next-themes:
         specifier: ^0.4.6
         version: 0.4.6(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
-      nodemailer:
-        specifier: ^7.0.11
-        version: 7.0.13
       react:
         specifier: ^19.2.0
         version: 19.2.5
@@ -156,15 +153,15 @@ importers:
         specifier: ^4.3.5
         version: 4.4.1
     devDependencies:
+      '@cloudflare/workers-types':
+        specifier: ^4.20251214.0
+        version: 4.20260702.1
       '@eslint/js':
         specifier: ^9.39.1
         version: 9.39.4
       '@types/node':
         specifier: ^24.10.1
         version: 24.12.2
-      '@types/nodemailer':
-        specifier: ^6.4.17
-        version: 6.4.23
       '@types/react':
         specifier: ^19.2.5
         version: 19.2.14
@@ -801,6 +798,9 @@ packages:
   '@babel/types@7.29.0':
     resolution: {integrity: sha512-LwdZHpScM4Qz8Xw2iKSzS+cfglZzJGvofQICy7W7v4caru4EaAmyUuO6BGrbyQ2mYV11W0U8j5mBhd14dd3B0A==}
     engines: {node: '>=6.9.0'}
+
+  '@cloudflare/workers-types@4.20260702.1':
+    resolution: {integrity: sha512-mOhf5TUEB1m2vPrxtqoIGfz0fUC9xyxRDx5gWHy5s+OCo6dcV+g7wI1R7gYCMFohhqF/2y2xeKVwMwCJjfn/WA==}
 
   '@date-fns/tz@1.4.1':
     resolution: {integrity: sha512-P5LUNhtbj6YfI3iJjw5EL9eUAG6OitD0W3fWQcpQjDRc/QIsL0tRNuO1PcDvPccWL1fSTXXdE1ds+l95DV/OFA==}
@@ -1915,9 +1915,6 @@ packages:
   '@types/node@24.12.2':
     resolution: {integrity: sha512-A1sre26ke7HDIuY/M23nd9gfB+nrmhtYyMINbjI1zHJxYteKR6qSMX56FsmjMcDb3SMcjJg5BiRRgOCC/yBD0g==}
 
-  '@types/nodemailer@6.4.23':
-    resolution: {integrity: sha512-aFV3/NsYFLSx9mbb5gtirBSXJnAlrusoKNuPbxsASWc7vrKLmIrTQRpdcxNcSFL3VW2A2XpeLEavwb2qMi6nlQ==}
-
   '@types/react-dom@19.2.3':
     resolution: {integrity: sha512-jp2L/eY6fn+KgVVQAOqYItbF0VY/YApe5Mz2F0aykSO8gx31bYCZyvSeYxCHKvzHG5eZjc+zyaS5BrBWya2+kQ==}
     peerDependencies:
@@ -2641,10 +2638,6 @@ packages:
 
   node-releases@2.0.38:
     resolution: {integrity: sha512-3qT/88Y3FbH/Kx4szpQQ4HzUbVrHPKTLVpVocKiLfoYvw9XSGOX2FmD2d6DrXbVYyAQTF2HeF6My8jmzx7/CRw==}
-
-  nodemailer@7.0.13:
-    resolution: {integrity: sha512-PNDFSJdP+KFgdsG3ZzMXCgquO7I6McjY2vlqILjtJd0hy8wEvtugS9xKRF2NWlPNGxvLCXlTNIae4serI7dinw==}
-    engines: {node: '>=6.0.0'}
 
   normalize-path@3.0.0:
     resolution: {integrity: sha512-6eZs5Ls3WtCisHWp9S2GUy8dqkpGi4BVSz3GaqiE6ezub0512ESztXUwUB6C6IKbQkY2Pnb/mD4WYojCRwcwLA==}
@@ -3990,6 +3983,8 @@ snapshots:
       '@babel/helper-string-parser': 7.27.1
       '@babel/helper-validator-identifier': 7.28.5
 
+  '@cloudflare/workers-types@4.20260702.1': {}
+
   '@date-fns/tz@1.4.1': {}
 
   '@esbuild/aix-ppc64@0.27.7':
@@ -5003,10 +4998,6 @@ snapshots:
     dependencies:
       undici-types: 7.16.0
 
-  '@types/nodemailer@6.4.23':
-    dependencies:
-      '@types/node': 24.12.2
-
   '@types/react-dom@19.2.3(@types/react@19.2.14)':
     dependencies:
       '@types/react': 19.2.14
@@ -5757,8 +5748,6 @@ snapshots:
       react-dom: 19.2.5(react@19.2.5)
 
   node-releases@2.0.38: {}
-
-  nodemailer@7.0.13: {}
 
   normalize-path@3.0.0: {}
 
