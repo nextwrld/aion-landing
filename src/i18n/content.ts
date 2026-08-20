@@ -205,6 +205,10 @@ export const content = {
       successSubtitle: "Revisa tu correo para confirmar tu solicitud.",
       formTitle: "Solicitar demo",
       error: "Hubo un error. Por favor intenta de nuevo.",
+      rateLimited:
+        "Demasiados intentos. Por favor, inténtalo de nuevo en unos minutos.",
+      verificationError:
+        "No pudimos verificar que no eres un robot. Por favor, inténtalo de nuevo.",
       placeholders: {
         nombre: "Nombre completo",
         gimnasio: "Nombre de tu gimnasio",
@@ -438,6 +442,9 @@ export const content = {
       successSubtitle: "Check your email to confirm your request.",
       formTitle: "Request demo",
       error: "There was an error. Please try again.",
+      rateLimited: "Too many attempts. Please try again in a few minutes.",
+      verificationError:
+        "We couldn't verify you are not a robot. Please try again.",
       placeholders: {
         nombre: "Full name",
         gimnasio: "Gym name",
