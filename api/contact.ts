@@ -1,74 +1,99 @@
-import nodemailer from "nodemailer";
+import { createContactHandler } from "./contact/handler";
+import { PostmarkEmailDelivery } from "./contact/email-delivery";
+import { createJsonLogger } from "./contact/logging";
+import { getOriginInfo } from "./contact/origin";
+import {
+  WorkersKvRateLimiter,
+  parseRateLimitEnabled,
+  parsePositiveInt,
+} from "./contact/rate-limiter";
+import {
+  NoOpAntiBotVerifier,
+  TurnstileVerifier,
+  parseAntibotEnabled,
+  parseVerifyTimeoutMs,
+} from "./contact/antibot";
 
-type EmailPayload = {
-  to: string;
-  subject: string;
-  html: string;
-};
+export interface Env {
+  CONTACT_RATE_LIMIT_KV?: KVNamespace;
+  CONTACT_ANTIBOT_ENABLED?: string;
+  CONTACT_RATE_LIMIT_ENABLED?: string;
+  RATE_LIMIT_MAX?: string;
+  RATE_LIMIT_WINDOW_SECONDS?: string;
+  TURNSTILE_SECRET_KEY?: string;
+  CONTACT_IP_HASH_KEY?: string;
+  POSTMARK_SERVER_TOKEN?: string;
+  POSTMARK_MESSAGE_STREAM?: string;
+  EMAIL_FROM?: string;
+  EMAIL_TO?: string;
+  EMAIL_HEADERS_TIMEOUT_MS?: string;
+  EMAIL_TOTAL_TIMEOUT_MS?: string;
+  TURNSTILE_VERIFY_TIMEOUT_MS?: string;
+}
 
-const smtpOptions = {
-  host: process.env.EMAIL_SERVER_HOST,
-  port: parseInt(process.env.EMAIL_SERVER_PORT || "465"),
-  secure: parseInt(process.env.EMAIL_SERVER_PORT || "465") === 465,
-  auth: {
-    user: process.env.EMAIL_SERVER_USER,
-    pass: process.env.EMAIL_SERVER_PASSWORD,
+function parseNumber(value: string | undefined, fallback: number): number {
+  if (!value) return fallback;
+  const n = Number.parseInt(value, 10);
+  return Number.isFinite(n) && n > 0 ? n : fallback;
+}
+
+export function createDependencies(env: Env, _ctx: ExecutionContext) {
+  void _ctx;
+  const headersTimeoutMs = parseNumber(env.EMAIL_HEADERS_TIMEOUT_MS, 10_000);
+  const totalTimeoutMs = parseNumber(env.EMAIL_TOTAL_TIMEOUT_MS, 20_000);
+
+  const delivery = new PostmarkEmailDelivery({
+    serverToken: env.POSTMARK_SERVER_TOKEN,
+    messageStream: env.POSTMARK_MESSAGE_STREAM ?? "outbound",
+    headersTimeoutMs,
+    totalTimeoutMs,
+  });
+
+  // Fase 4 — Anti-bot verifier wiring (kill-switch CONTACT_ANTIBOT_ENABLED)
+  const antibotEnabled = parseAntibotEnabled(env.CONTACT_ANTIBOT_ENABLED, true);
+  const verifyTimeoutMs = parseVerifyTimeoutMs(env.TURNSTILE_VERIFY_TIMEOUT_MS, 5_000);
+  const verifier = antibotEnabled
+    ? new TurnstileVerifier({
+        secret: env.TURNSTILE_SECRET_KEY,
+        timeoutMs: verifyTimeoutMs,
+      })
+    : new NoOpAntiBotVerifier();
+
+  // Fase 3 — Rate limiter wiring (kill-switch CONTACT_RATE_LIMIT_ENABLED)
+  const rateLimitEnabled = parseRateLimitEnabled(env.CONTACT_RATE_LIMIT_ENABLED, true);
+  const rateLimitMax = parsePositiveInt(env.RATE_LIMIT_MAX, 5);
+  const rateLimitWindowSeconds = parsePositiveInt(env.RATE_LIMIT_WINDOW_SECONDS, 900);
+  const limiter = new WorkersKvRateLimiter({
+    kv: env.CONTACT_RATE_LIMIT_KV,
+    enabled: rateLimitEnabled,
+    limit: rateLimitMax,
+    windowSeconds: rateLimitWindowSeconds,
+  });
+
+  return {
+    delivery,
+    emailFrom: env.EMAIL_FROM ?? "",
+    emailTo: env.EMAIL_TO ?? env.EMAIL_FROM ?? "contact@nextwrld.com",
+    verifier,
+    limiter,
+    rateLimit: { limit: rateLimitMax, windowSeconds: rateLimitWindowSeconds },
+    createLogger: (requestId: string) => createJsonLogger(requestId),
+    getOriginInfo: (req: Request) => getOriginInfo(req, env.CONTACT_IP_HASH_KEY),
+    hashKey: env.CONTACT_IP_HASH_KEY,
+  };
+}
+
+export default {
+  async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
+    const url = new URL(request.url);
+    if (url.pathname !== "/api/contact") {
+      return new Response(JSON.stringify({ success: false, code: "not_found" }), {
+        status: 404,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+    const deps = createDependencies(env, ctx);
+    const handler = createContactHandler(deps);
+    return handler(request);
   },
 };
-
-const sendEmail = async (data: EmailPayload) => {
-  const transporter = nodemailer.createTransport({
-    ...smtpOptions,
-  });
-
-  const result = await transporter.sendMail({
-    from: process.env.EMAIL_FROM,
-    ...data,
-  });
-
-  return result;
-};
-
-export default async function handler(req: any, res: any) {
-  if (req.method !== "POST") {
-    return res.status(405).json({ error: "Method not allowed" });
-  }
-
-  try {
-    const { fullName, email, phone, gymName, members, message } = req.body || {};
-
-    if (!fullName || !email || !message) {
-      return res.status(400).json({ error: "Missing required fields" });
-    }
-
-    const emailHtml = `
-      <div style="font-family: Inter, Arial, sans-serif; max-width: 640px; margin: 0 auto; color: #0f172a;">
-        <h2 style="margin: 0 0 16px; color: #0b3b8f;">Solicitud de DEMO y contacto para usar AION Wellness</h2>
-        <p style="margin: 0 0 20px; color: #334155;">Llegó un nuevo interesado desde el formulario web.</p>
-
-        <div style="border: 1px solid #e2e8f0; border-radius: 12px; padding: 16px; background: #f8fafc;">
-          <p style="margin: 0 0 10px;"><strong>Nombre:</strong> ${fullName}</p>
-          <p style="margin: 0 0 10px;"><strong>Email:</strong> ${email}</p>
-          <p style="margin: 0 0 10px;"><strong>Teléfono:</strong> ${phone || "No informado"}</p>
-          <p style="margin: 0 0 10px;"><strong>Gimnasio:</strong> ${gymName || "No informado"}</p>
-          <p style="margin: 0 0 10px;"><strong>Miembros:</strong> ${members || "No informado"}</p>
-          <p style="margin: 0 0 6px;"><strong>Mensaje:</strong></p>
-          <div style="white-space: pre-wrap; line-height: 1.5; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px;">${message}</div>
-        </div>
-      </div>
-    `;
-
-    await sendEmail({
-      to: process.env.EMAIL_FROM || "contact@nextwrld.com",
-      subject: `Solicitud de DEMO AION WELLNESS y contacto: ${fullName}`,
-      html: emailHtml,
-    });
-
-    return res.status(200).json({ success: true, message: "Email sent successfully" });
-  } catch (error: any) {
-    return res.status(500).json({
-      error: "Failed to send email",
-      details: error.message,
-    });
-  }
-}
