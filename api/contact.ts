@@ -2,6 +2,7 @@ import { createContactHandler } from "./contact/handler";
 import { PostmarkEmailDelivery } from "./contact/email-delivery";
 import { createJsonLogger } from "./contact/logging";
 import { getOriginInfo } from "./contact/origin";
+import { getReporter } from "./contact/diagnostics.js";
 import {
   WorkersKvRateLimiter,
   parseRateLimitEnabled,
@@ -80,17 +81,41 @@ export function createDependencies(env: Env, _ctx: ExecutionContext) {
     createLogger: (requestId: string) => createJsonLogger(requestId),
     getOriginInfo: (req: Request) => getOriginInfo(req, env.CONTACT_IP_HASH_KEY),
     hashKey: env.CONTACT_IP_HASH_KEY,
+    reporter: getReporter(),
   };
+}
+
+function getRequestIdForFetch(request: Request): string {
+  const raw = (request.headers.get("X-Request-ID") ?? request.headers.get("x-request-id") ?? "").trim();
+  const uuidRe = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
+  if (raw.length === 36 && uuidRe.test(raw) && raw === raw.toLowerCase()) return raw;
+  try {
+    return crypto.randomUUID().toLowerCase();
+  } catch {
+    const bytes = Array.from({ length: 16 }, () => Math.floor(Math.random() * 256));
+    bytes[6] = (bytes[6] & 0x0f) | 0x40;
+    bytes[8] = (bytes[8] & 0x3f) | 0x80;
+    const hex = bytes.map((b) => b.toString(16).padStart(2, "0")).join("");
+    return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${hex.slice(16, 20)}-${hex.slice(20)}`;
+  }
 }
 
 export default {
   async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
     const url = new URL(request.url);
     if (url.pathname !== "/api/contact") {
-      return new Response(JSON.stringify({ success: false, code: "not_found" }), {
-        status: 404,
-        headers: { "Content-Type": "application/json" },
-      });
+      const requestId = getRequestIdForFetch(request);
+      return new Response(
+        JSON.stringify({ error: { code: "not_found", message: "Not found", request_id: requestId } }),
+        {
+          status: 404,
+          headers: {
+            "Content-Type": "application/json",
+            "X-Request-ID": requestId,
+            "Access-Control-Expose-Headers": "X-Request-ID",
+          },
+        },
+      );
     }
     const deps = createDependencies(env, ctx);
     const handler = createContactHandler(deps);

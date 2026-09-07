@@ -5,6 +5,8 @@ import type { EmailDelivery, EmailMessage } from "./email-delivery";
 import { getOriginInfo } from "./origin";
 import type { RateLimiter } from "./rate-limiter";
 import type { AntiBotVerifier } from "./antibot";
+import { createSafeEvent, getReporter } from "./diagnostics.js";
+import type { Reporter } from "./diagnostics.js";
 
 // Re-export contracts for consumers that import from handler (backward compat with PR1)
 export type { RateLimiter, RateLimitDecision } from "./rate-limiter";
@@ -23,46 +25,86 @@ export type HandlerDeps = {
   // origin helper
   getOriginInfo?: (req: Request) => Promise<{ normalizedIp: string | null; originKey: string | null; fingerprint: string | null }>;
   hashKey?: string;
+  reporter?: Reporter;
 };
 
-function jsonResponse(body: unknown, status: number, extraHeaders: Record<string, string> = {}): Response {
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
+
+function isCanonicalUuid(value: string): boolean {
+  return value.length === 36 && UUID_RE.test(value) && value === value.toLowerCase();
+}
+
+function generateRequestId(): string {
+  try {
+    return crypto.randomUUID().toLowerCase();
+  } catch {
+    const bytes = Array.from({ length: 16 }, () => Math.floor(Math.random() * 256));
+    bytes[6] = (bytes[6] & 0x0f) | 0x40;
+    bytes[8] = (bytes[8] & 0x3f) | 0x80;
+    const hex = bytes.map((b) => b.toString(16).padStart(2, "0")).join("");
+    return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${hex.slice(16, 20)}-${hex.slice(20)}`;
+  }
+}
+
+function getEffectiveRequestId(request: Request): string {
+  const raw = (request.headers.get("X-Request-ID") ?? request.headers.get("x-request-id") ?? "").trim();
+  if (raw.length === 36 && isCanonicalUuid(raw)) return raw;
+  return generateRequestId();
+}
+
+function jsonResponse(body: unknown, status: number, requestId: string, extraHeaders: Record<string, string> = {}): Response {
   return new Response(JSON.stringify(body), {
     status,
-    headers: { "Content-Type": "application/json", ...extraHeaders },
+    headers: { "Content-Type": "application/json", "X-Request-ID": requestId, "Access-Control-Expose-Headers": "X-Request-ID", ...extraHeaders },
   });
 }
 
-function generateRequestId(req: Request): string {
-  const cfRay = req.headers.get("cf-ray");
-  if (cfRay) return cfRay;
-  const reqId = req.headers.get("x-request-id");
-  if (reqId) return reqId;
-  // crypto.randomUUID is available in Workers
-  try {
-    return crypto.randomUUID();
-  } catch {
-    return `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
-  }
+function errorBody(code: string, requestId: string): unknown {
+  const messages: Record<string, string> = {
+    method_not_allowed: "Method not allowed",
+    invalid_request: "Invalid request",
+    verification_failed: "Verification failed",
+    rate_limited: "Too many requests",
+    delivery_failed: "Unable to send message. Please try again later.",
+  };
+  return { error: { code, message: messages[code] ?? "Request failed", request_id: requestId } };
+}
+
+function statusClass(status: number): string {
+  if (status >= 500) return "5xx";
+  if (status >= 400) return "4xx";
+  if (status >= 300) return "3xx";
+  return "2xx";
+}
+
+function reportOnce(reporter: Reporter, requestId: string, code: string, status: number): void {
+  reporter.report(
+    createSafeEvent({
+      event_name: "landing.worker.unexpected_failure",
+      severity: "error",
+      runtime: "landing-worker",
+      request_id: requestId,
+      public_error_code: code,
+      status_class: statusClass(status),
+      route_template: "/api/contact",
+    }),
+  );
 }
 
 export function createContactHandler(deps: HandlerDeps) {
   const delivery = deps.delivery;
   const emailFrom = deps.emailFrom;
   const emailTo = deps.emailTo;
+  const reporter: Reporter = deps.reporter ?? getReporter();
 
   return async function handle(request: Request): Promise<Response> {
     const start = Date.now();
-    const requestId = generateRequestId(request);
+    const requestId = getEffectiveRequestId(request);
     const logger: Logger =
-      deps.createLogger?.(requestId) ??
-      deps.logger ??
-      createJsonLogger(requestId);
-
+      deps.createLogger?.(requestId) ?? deps.logger ?? createJsonLogger(requestId);
     const getOrigin = deps.getOriginInfo ?? ((req: Request) => getOriginInfo(req, deps.hashKey));
-
     const duration = () => Date.now() - start;
 
-    // Method check — single response, with Allow header
     if (request.method !== "POST") {
       logger.warn("contact.blocked", {
         reason: "method_not_allowed",
@@ -70,12 +112,43 @@ export function createContactHandler(deps: HandlerDeps) {
         duration_ms: duration(),
         request_id: requestId,
       });
-      return jsonResponse({ success: false, code: "method_not_allowed" }, 405, {
-        Allow: "POST",
-      });
+      return jsonResponse(errorBody("method_not_allowed", requestId), 405, requestId, { Allow: "POST" });
     }
 
-    // Parse JSON body — 400 on invalid JSON / wrong content-type
+    const contentType = request.headers.get("content-type");
+    if (contentType === null || !/^application\/json(?:\s*;\s*charset=[^;\s]+)?$/i.test(contentType)) {
+      logger.info("contact.blocked", {
+        reason: "invalid_request",
+        http_status: 415,
+        duration_ms: duration(),
+        request_id: requestId,
+      });
+      return jsonResponse(errorBody("invalid_request", requestId), 415, requestId);
+    }
+
+    const declaredLength = request.headers.get("content-length");
+    if (declaredLength !== null) {
+      const n = Number(declaredLength);
+      if (!Number.isSafeInteger(n) || n < 0) {
+        logger.info("contact.blocked", {
+          reason: "invalid_request",
+          http_status: 400,
+          duration_ms: duration(),
+          request_id: requestId,
+        });
+        return jsonResponse(errorBody("invalid_request", requestId), 400, requestId);
+      }
+      if (n > 16 * 1024) {
+        logger.info("contact.blocked", {
+          reason: "invalid_request",
+          http_status: 413,
+          duration_ms: duration(),
+          request_id: requestId,
+        });
+        return jsonResponse(errorBody("invalid_request", requestId), 413, requestId);
+      }
+    }
+
     let rawBody: unknown;
     try {
       const text = await request.text();
@@ -86,9 +159,27 @@ export function createContactHandler(deps: HandlerDeps) {
           duration_ms: duration(),
           request_id: requestId,
         });
-        return jsonResponse({ success: false, code: "invalid_request" }, 400);
+        return jsonResponse(errorBody("invalid_request", requestId), 400, requestId);
+      }
+      if (new TextEncoder().encode(text).length > 16 * 1024) {
+        logger.info("contact.blocked", {
+          reason: "invalid_request",
+          http_status: 413,
+          duration_ms: duration(),
+          request_id: requestId,
+        });
+        return jsonResponse(errorBody("invalid_request", requestId), 413, requestId);
       }
       rawBody = JSON.parse(text);
+      if (new TextEncoder().encode(JSON.stringify(rawBody)).length > 16 * 1024) {
+        logger.info("contact.blocked", {
+          reason: "invalid_request",
+          http_status: 413,
+          duration_ms: duration(),
+          request_id: requestId,
+        });
+        return jsonResponse(errorBody("invalid_request", requestId), 413, requestId);
+      }
     } catch {
       logger.info("contact.blocked", {
         reason: "invalid_request",
@@ -96,7 +187,7 @@ export function createContactHandler(deps: HandlerDeps) {
         duration_ms: duration(),
         request_id: requestId,
       });
-      return jsonResponse({ success: false, code: "invalid_request" }, 400);
+      return jsonResponse(errorBody("invalid_request", requestId), 400, requestId);
     }
 
     // Extract honeypot + turnstile before strict validation (contactSchema is strictObject)
@@ -127,7 +218,7 @@ export function createContactHandler(deps: HandlerDeps) {
         duration_ms: duration(),
         request_id: requestId,
       });
-      return jsonResponse({ success: false, code: "invalid_request" }, 400);
+      return jsonResponse(errorBody("invalid_request", requestId), 400, requestId);
     }
 
     const data = parsed.data;
@@ -144,7 +235,7 @@ export function createContactHandler(deps: HandlerDeps) {
         duration_ms: duration(),
         request_id: requestId,
       });
-      return jsonResponse({ success: false, code: "verification_failed" }, 403);
+      return jsonResponse(errorBody("verification_failed", requestId), 403, requestId);
     }
 
     // Anti-bot verifier (PR2: TurnstileVerifier / NoOp)
@@ -164,7 +255,7 @@ export function createContactHandler(deps: HandlerDeps) {
             duration_ms: duration(),
             request_id: requestId,
           });
-          return jsonResponse({ success: false, code: "verification_failed" }, 403);
+          return jsonResponse(errorBody("verification_failed", requestId), 403, requestId);
         }
         if (decision.kind === "unavailable") {
           logger.warn("contact.antibot.skip", {
@@ -219,11 +310,7 @@ export function createContactHandler(deps: HandlerDeps) {
               duration_ms: duration(),
               request_id: requestId,
             });
-            return jsonResponse(
-              { success: false, code: "rate_limited" },
-              429,
-              { "Retry-After": String(retryAfter) },
-            );
+            return jsonResponse(errorBody("rate_limited", requestId), 429, requestId, { "Retry-After": String(retryAfter) });
           }
           if (decision.kind === "unavailable") {
             logger.warn("contact.rate_limit.skip", {
@@ -258,33 +345,40 @@ export function createContactHandler(deps: HandlerDeps) {
     };
 
     try {
-      const result = await delivery.send(message);
-      if (result.kind === "accepted") {
+      const result = (await delivery.send(message)) as unknown as {
+        kind?: string;
+        category?: string;
+        providerRequestId?: string;
+      };
+      const isAccepted =
+        result && typeof result === "object" && "kind" in result
+          ? (result as { kind: string }).kind === "accepted"
+          : true;
+      if (isAccepted) {
         const origin = await getOrigin(request);
         logger.info("contact.submit", {
           outcome: "delivered",
           origin_fingerprint: origin.fingerprint ?? undefined,
-          provider_request_id: result.providerRequestId ?? undefined,
+          provider_request_id: (result as { providerRequestId?: string })?.providerRequestId ?? undefined,
           http_status: 200,
           duration_ms: duration(),
           request_id: requestId,
         });
-        return jsonResponse({ success: true }, 200);
+        return jsonResponse({ success: true, request_id: requestId }, 200, requestId);
       }
-
-      // Delivery failed — map to 500 without leaking provider body or error.message
+      reportOnce(reporter, requestId, "delivery_failed", 500);
       const origin = await getOrigin(request);
       logger.error("contact.smtp_failure", {
         transport: "https_api",
-        category: result.category,
+        category: (result as { category?: string }).category,
         origin_fingerprint: origin.fingerprint ?? undefined,
         http_status: 500,
         duration_ms: duration(),
         request_id: requestId,
       });
-      return jsonResponse({ success: false, code: "delivery_failed" }, 500);
+      return jsonResponse(errorBody("delivery_failed", requestId), 500, requestId);
     } catch {
-      // Unexpected throw from delivery — never leak internal message, respond once
+      reportOnce(reporter, requestId, "delivery_failed", 500);
       const origin = await getOrigin(request);
       logger.error("contact.smtp_failure", {
         transport: "https_api",
@@ -294,7 +388,7 @@ export function createContactHandler(deps: HandlerDeps) {
         duration_ms: duration(),
         request_id: requestId,
       });
-      return jsonResponse({ success: false, code: "delivery_failed" }, 500);
+      return jsonResponse(errorBody("delivery_failed", requestId), 500, requestId);
     }
   };
 }
