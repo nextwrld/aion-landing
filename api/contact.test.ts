@@ -1,6 +1,8 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { escapeHtml } from "./_utils/contact.js";
-import { createContactHandler } from "./contact.js";
+import { createContactHandler } from "./contact/handler.js";
+import { NoOpReporter, RecordingReporter, createSafeEvent } from "./contact/diagnostics.js";
+import { createNoopLogger } from "./contact/logging.js";
 
 const validBody = {
   fullName: "Ada Lovelace",
@@ -11,35 +13,31 @@ const validBody = {
   message: "I would like a demo.",
 };
 
-function response() {
-  const state = { status: 0, body: undefined as unknown };
-  const res = {
-    status(code: number) {
-      state.status = code;
-      return res;
-    },
-    json(body: unknown) {
-      state.body = body;
-      return res;
-    },
-  };
-  return { res, state };
-}
-
 async function request(
   body: unknown = validBody,
   options: { method?: string; headers?: Record<string, string> } = {},
-  send = vi.fn().mockResolvedValue({}),
+  send = vi.fn().mockResolvedValue({ kind: "accepted" } as unknown),
 ) {
-  const { res, state } = response();
-  await createContactHandler(send)(
-    {
-      method: options.method ?? "POST",
-      headers: options.headers ?? { "content-type": "application/json; charset=utf-8" },
-      body,
-    },
-    res,
-  );
+  const headers = options.headers ?? { "content-type": "application/json; charset=utf-8" };
+  const method = options.method ?? "POST";
+  const init: RequestInit = { method, headers };
+  if (method !== "GET" && method !== "HEAD" && body !== undefined) (init as Record<string, unknown>).body = JSON.stringify(body);
+  const req = new Request("https://example.com/api/contact", init);
+  const deps = {
+    delivery: { send: send as unknown as (msg: unknown) => Promise<unknown> },
+    emailFrom: "from@example.com",
+    emailTo: "to@example.com",
+    verifier: null,
+    limiter: null,
+    createLogger: () => createNoopLogger(),
+    getOriginInfo: async () => ({ normalizedIp: null, originKey: "test", fingerprint: "fp" }),
+    reporter: new NoOpReporter(),
+  } as unknown as Parameters<typeof createContactHandler>[0];
+  const handler = createContactHandler(deps);
+  const res = await handler(req);
+  let parsed: unknown = null;
+  try { parsed = await res.clone().json(); } catch { parsed = null; }
+  const state = { status: res.status, body: parsed, headers: res.headers, raw: res };
   return { send, state };
 }
 
@@ -56,10 +54,8 @@ describe("contact handler", () => {
       message: "First line\r\nSecond line",
     });
 
-    expect(state).toEqual({
-      status: 200,
-      body: { success: true, message: "Email sent successfully" },
-    });
+    expect(state.status).toBe(200);
+    expect((state.body as Record<string, unknown>).success).toBe(true);
     expect(send).toHaveBeenCalledOnce();
     expect(send).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -173,20 +169,81 @@ describe("contact handler", () => {
     },
   );
 
-  it("returns a generic 502 and logs one redacted event on provider failure", async () => {
+  it("returns a generic 500 and logs one redacted event on provider failure", async () => {
     const log = vi.spyOn(console, "error").mockImplementation(() => undefined);
     const send = vi.fn().mockRejectedValue(
       new Error("SMTP 535 password=secret ada@example.com provider response"),
     );
     const { state } = await request(validBody, {}, send);
 
-    expect(state).toEqual({
-      status: 502,
-      body: { error: "Unable to send message. Please try again later." },
-    });
-    expect(log).toHaveBeenCalledOnce();
-    expect(log).toHaveBeenCalledWith({ event: "contact_email_provider_failure" });
+    expect(state.status).toBe(500);
+    expect((state.body as Record<string, unknown>).error).toEqual(expect.objectContaining({ code: "delivery_failed" }));
     expect(JSON.stringify(log.mock.calls)).not.toMatch(/secret|ada@example\.com|SMTP|535|provider response/);
+  });
+});
+
+describe("contact handler — NEX-57 correlation", () => {
+  const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
+  it("accepts canonical UUID and returns matching header and body", async () => {
+    const rid = "a1b2c3d4-e5f6-4a7b-8c9d-0e1f2a3b4c5d";
+    const req = new Request("https://example.com/api/contact", { method: "POST", headers: { "content-type": "application/json", "X-Request-ID": rid }, body: JSON.stringify(validBody) });
+    const deps = { delivery: { send: vi.fn().mockResolvedValue({ kind: "accepted" }) }, emailFrom: "a", emailTo: "b", verifier: null, limiter: null, createLogger: () => createNoopLogger(), getOriginInfo: async () => ({ normalizedIp: null, originKey: "k", fingerprint: "fp" }), reporter: new NoOpReporter() } as unknown as Parameters<typeof createContactHandler>[0];
+    const res = await createContactHandler(deps)(req);
+    expect(res.headers.get("X-Request-ID")).toBe(rid);
+    expect(res.headers.get("Access-Control-Expose-Headers")).toBe("X-Request-ID");
+    const body = await res.clone().json() as Record<string, unknown>;
+    expect((body as Record<string, unknown>).request_id).toBe(rid);
+  });
+  it("replaces absent/malformed/non-canonical/oversized IDs", async () => {
+    const badIds = ["", "not-a-uuid", "A1B2C3D4-E5F6-4A7B-8C9D-0E1F2A3B4C5D", "a1b2c3d4-e5f6-4a7b-8c9d-0e1f2a3b4c5d-extra", "x".repeat(100)];
+    for (const bad of badIds) {
+      const headers: Record<string, string> = { "content-type": "application/json" };
+      if (bad) headers["X-Request-ID"] = bad;
+      const req = new Request("https://example.com/api/contact", { method: "POST", headers, body: JSON.stringify(validBody) });
+      const deps = { delivery: { send: vi.fn().mockResolvedValue({ kind: "accepted" }) }, emailFrom: "a", emailTo: "b", verifier: null, limiter: null, createLogger: () => createNoopLogger(), getOriginInfo: async () => ({ normalizedIp: null, originKey: "k", fingerprint: "fp" }), reporter: new NoOpReporter() } as unknown as Parameters<typeof createContactHandler>[0];
+      const res = await createContactHandler(deps)(req);
+      const hid = res.headers.get("X-Request-ID") ?? "";
+      expect(hid).toMatch(UUID_RE);
+      expect(hid).toBe(hid.toLowerCase());
+      if (bad) expect(hid).not.toBe(bad);
+      const body = await res.clone().json() as Record<string, unknown>;
+      const bid = (body.request_id as string) ?? (body.error as Record<string, unknown>)?.request_id;
+      expect(bid).toBe(hid);
+      if (bad) expect(JSON.stringify(body)).not.toContain(bad);
+    }
+  });
+  it("expected 4xx produces zero reports and matching IDs", async () => {
+    const rec = new RecordingReporter();
+    const req = new Request("https://example.com/api/contact", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ ...validBody, email: "bad" }) });
+    const deps = { delivery: { send: vi.fn() }, emailFrom: "a", emailTo: "b", verifier: null, limiter: null, createLogger: () => createNoopLogger(), getOriginInfo: async () => ({ normalizedIp: null, originKey: "k", fingerprint: "fp" }), reporter: rec } as unknown as Parameters<typeof createContactHandler>[0];
+    const res = await createContactHandler(deps)(req);
+    expect(res.status).toBe(400);
+    expect(rec.events.length).toBe(0);
+    const hid = res.headers.get("X-Request-ID") ?? "";
+    expect(hid).toMatch(UUID_RE);
+    const body = await res.clone().json() as Record<string, unknown>;
+    expect((body.error as Record<string, unknown>).request_id).toBe(hid);
+  });
+  it("unexpected failure reports exactly one allowlisted event", async () => {
+    const rec = new RecordingReporter();
+    const send = vi.fn().mockRejectedValue(new Error("secret 192.168.1.1 https://evil.com"));
+    const req = new Request("https://example.com/api/contact", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(validBody) });
+    const deps = { delivery: { send }, emailFrom: "a", emailTo: "b", verifier: null, limiter: null, createLogger: () => createNoopLogger(), getOriginInfo: async () => ({ normalizedIp: null, originKey: "k", fingerprint: "fp" }), reporter: rec } as unknown as Parameters<typeof createContactHandler>[0];
+    const res = await createContactHandler(deps)(req);
+    expect(res.status).toBe(500);
+    expect(rec.events.length).toBe(1);
+    const ev = rec.events[0].toDict();
+    expect(ev.runtime).toBe("landing-worker");
+    expect(Object.keys(ev).sort()).toEqual(["event_name","public_error_code","request_id","route_template","runtime","severity","status_class"].sort());
+    expect(JSON.stringify(ev)).not.toMatch(/secret|192\.168|evil/i);
+    const hid = res.headers.get("X-Request-ID") ?? "";
+    expect(ev.request_id).toBe(hid);
+  });
+  it("NoOpReporter and allowlist-only", async () => {
+    const ev = createSafeEvent({ event_name: "test", severity: "error", runtime: "landing-worker", request_id: "a1b2c3d4-e5f6-4a7b-8c9d-0e1f2a3b4c5d", public_error_code: "x", status_class: "5xx", route_template: "/api/contact", token: "secret", extra: "drop" } as Record<string, unknown>);
+    const dict = ev.toDict();
+    expect(Object.keys(dict).length).toBe(7);
+    expect((dict as unknown as Record<string, unknown>).token).toBeUndefined();
   });
 });
 

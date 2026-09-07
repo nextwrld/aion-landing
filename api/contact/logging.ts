@@ -46,17 +46,35 @@ export interface Logger {
   error(event: string, fields?: Record<string, unknown>): void;
 }
 
+function isForbiddenKey(key: string): boolean {
+  const lower = key.toLowerCase();
+  return FORBIDDEN_LOG_FIELDS.some((f) => f.toLowerCase() === lower);
+}
+
+function filterFields(
+  fields: Record<string, unknown> | undefined,
+): Record<string, unknown> | undefined {
+  if (!fields) return fields;
+  const out: Record<string, unknown> = {};
+  for (const [k, v] of Object.entries(fields)) {
+    if (isForbiddenKey(k)) continue;
+    out[k] = v;
+  }
+  return out;
+}
+
 function emit(
   level: LogLevel,
   event: string,
   requestId: string,
   fields: Record<string, unknown> | undefined,
 ) {
+  const safe = filterFields(fields);
   const base: Record<string, unknown> = {
     timestamp: new Date().toISOString(),
     event,
     request_id: requestId,
-    ...fields,
+    ...safe,
   };
   const line = JSON.stringify(base);
   if (level === "error") console.error(line);

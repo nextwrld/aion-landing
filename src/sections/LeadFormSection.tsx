@@ -3,6 +3,7 @@ import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { Check, User, Building2, Mail, Phone, Loader2 } from 'lucide-react';
 import { useI18n } from '../i18n/I18nProvider';
+import { submitContact } from '../lib/contactClient';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -26,18 +27,7 @@ async function submitLeadForm(data: LeadFormData) {
     members: data.miembros,
     message: data.mensaje,
   };
-
-  const response = await fetch('/api/contact', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload),
-  });
-
-  const result = await response.json();
-
-  if (!response.ok) {
-    throw new Error(result?.error || 'Failed to send message');
-  }
+  await submitContact(payload);
 }
 
 export default function LeadFormSection() {
@@ -80,8 +70,7 @@ export default function LeadFormSection() {
       setFormState('success');
       setFormData({ nombre: '', gimnasio: '', email: '', telefono: '', miembros: '', mensaje: '' });
       setErrors({});
-    } catch (error) {
-      console.error('Lead form submission error', error);
+    } catch {
       setFormState('error');
     }
   };
