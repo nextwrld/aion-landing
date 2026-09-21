@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { ALLOWED_FIELDS, NoOpReporter, RecordingReporter, createSafeEvent, registerBrowserDiagnostics } from './diagnostics';
 function createMockWindow(p='/'){ const m=new Map<string,Set<EventListener>>(); const w:any={ location:{pathname:p}, history:{ pushState(_:unknown,__:string,url:string){ w.location.pathname=new URL(url,'http://localhost').pathname; } }, addEventListener(t:string,f:EventListener){ if(!m.has(t)) m.set(t,new Set()); m.get(t)!.add(f); }, removeEventListener(t:string,f:EventListener){ m.get(t)?.delete(f); }, dispatchEvent(e:Event){ const s=m.get(e.type); if(s) for(const f of [...s]) f(e); return true; } }; return w as unknown as Window; }
