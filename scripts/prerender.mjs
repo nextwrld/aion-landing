@@ -9,9 +9,12 @@
 //      API. Vite cleans up its own handles when the build resolves.
 //   2. Dynamically imports the built server bundle (a normal path, not
 //      `file://`) and calls its `prerender` export.
-//   3. Reads `dist/index.html` (emitted by the main client build) and
-//      injects the rendered Spanish markup into the `<div id="root"></div>`
-//      placeholder.
+//   3. Reads `dist/index.html` (emitted by the main client build) once as a
+//      template and, for every exported route, injects the rendered Spanish
+//      markup into `<div id="root"></div>` and replaces the
+//      `<!--seo:start-->...<!--seo:end-->` block with that route's head tags.
+//      Output: `dist/index.html`, `dist/<route>/index.html`, `dist/404.html`
+//      and a generated `dist/sitemap.xml`.
 //   4. Cleans up the temporary server bundle directory in a `finally`
 //      block so failure paths cannot leave the temp dir behind.
 //   5. Exits with code 0 on success, non-zero on any failure
@@ -22,14 +25,15 @@
 // Usage: `node scripts/prerender.mjs` (wired into the `build` npm script).
 
 import { build } from 'vite'
-import { readFileSync, writeFileSync, rmSync, existsSync } from 'node:fs'
+import { readFileSync, writeFileSync, rmSync, existsSync, mkdirSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import path from 'node:path'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const repoRoot = path.resolve(__dirname, '..')
 const serverOutDir = path.join(repoRoot, '.prerender-server')
-const distIndexPath = path.join(repoRoot, 'dist', 'index.html')
+const distDir = path.join(repoRoot, 'dist')
+const distIndexPath = path.join(distDir, 'index.html')
 const prerenderEntry = path.join(repoRoot, 'src', 'prerender.tsx')
 
 function log(msg) {
@@ -69,7 +73,9 @@ function loadPrerender() {
   return import(serverEntry)
 }
 
-function injectIntoDist(html) {
+const SEO_BLOCK_RE = /<!--seo:start-->[\s\S]*?<!--seo:end-->/
+
+function readTemplate() {
   if (!existsSync(distIndexPath)) {
     throw new Error(`client build output not found at ${distIndexPath}`)
   }
@@ -77,30 +83,58 @@ function injectIntoDist(html) {
   if (!template.includes('<div id="root"></div>')) {
     throw new Error('dist/index.html is missing the <div id="root"></div> placeholder')
   }
-  const output = template.replace(
-    '<div id="root"></div>',
-    `<div id="root">${html}</div>`,
-  )
-  writeFileSync(distIndexPath, output)
+  if (!SEO_BLOCK_RE.test(template)) {
+    throw new Error('dist/index.html is missing the <!--seo:start--> ... <!--seo:end--> block')
+  }
+  return template
+}
+
+// "/" -> dist/index.html, "/404" -> dist/404.html, "/a/b" -> dist/a/b/index.html
+function outputPathFor(route) {
+  if (route === '/') return distIndexPath
+  if (route === '/404') return path.join(distDir, '404.html')
+  return path.join(distDir, ...route.split('/').filter(Boolean), 'index.html')
+}
+
+function renderPage(template, html, head) {
+  if (typeof html !== 'string' || html.length === 0) {
+    throw new Error('prerender returned no HTML')
+  }
+  if (typeof head !== 'string' || head.length === 0) {
+    throw new Error('prerender returned no head tags')
+  }
+  return template
+    .replace(SEO_BLOCK_RE, () => head)
+    .replace('<div id="root"></div>', () => `<div id="root">${html}</div>`)
 }
 
 async function main() {
   await buildServerBundle()
 
   const mod = await loadPrerender()
-  const prerender = mod.prerender
+  const { prerender, routes, sitemap } = mod
   if (typeof prerender !== 'function') {
     throw new Error('server bundle has no `prerender` function export')
   }
-
-  const result = await prerender()
-  const html = typeof result === 'string' ? result : result?.html
-  if (typeof html !== 'string' || html.length === 0) {
-    throw new Error('prerender returned no HTML')
+  if (!Array.isArray(routes) || routes.length === 0) {
+    throw new Error('server bundle has no `routes` array export')
   }
 
-  injectIntoDist(html)
-  log('prerendered 1 page: /')
+  // Read the pristine template once, before dist/index.html is overwritten.
+  const template = readTemplate()
+
+  for (const route of routes) {
+    const result = await prerender(route)
+    const out = outputPathFor(route)
+    mkdirSync(path.dirname(out), { recursive: true })
+    writeFileSync(out, renderPage(template, result?.html, result?.head))
+  }
+
+  if (typeof sitemap === 'function') {
+    writeFileSync(path.join(distDir, 'sitemap.xml'), sitemap())
+  }
+
+  log(`prerendered ${routes.length} pages: ${routes.join(', ')}`)
 }
 
 let exitCode = 0

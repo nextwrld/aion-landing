@@ -5,7 +5,8 @@ import { inspectAttr } from 'kimi-plugin-inspect-react'
 
 // https://vite.dev/config/
 export default defineConfig({
-  base: './',
+  // Absolute base: nested routes (/soluciones/gimnasios) must resolve /assets from the root.
+  base: '/',
   plugins: [inspectAttr(), react()],
   server: {
     port: 3000,
