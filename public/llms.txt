@@ -3,18 +3,41 @@
 > AION es el sistema que ayuda a ordenar, controlar y hacer crecer tu negocio de fitness y bienestar.
 
 ## About
-AION is a web-based management system for gyms and wellness centers in Venezuela. It helps operators centralize clients, memberships, payments, access and daily cash in one place, with remote visibility and a more organized operation.
+AION is a web-based management system for gyms, sports centers and sports institutions in Venezuela and Argentina. It helps operators centralize members, memberships, billing, access and daily cash in one place, with remote visibility and multi-location support.
 
-## Capabilities
-- Centralized member management (search by name or cédula)
-- Membership tracking and renewals
-- Access control at the front desk
-- Daily cash closing with clear numbers
-- Remote visibility for gym owners
+## Who it is for
+- Gyms
+- CrossFit boxes and functional training centers
+- Yoga, pilates and dance studios
+- Sports centers, clubs and academies
+- Sports institutions: university sports areas, corporate gyms, municipal sports centers
+- Gym chains with multiple locations
+
+## Capabilities (available today)
+- Member registration and billing, with daily cash closing by payment method
+- Access control: the front desk enters the client ID and the system validates the membership
+- Membership monitoring: up to date, grace period, expired
+- Reports: revenue, attendance and membership status
+- Multiple locations in one account
+
+## Coming soon
+- Trainer module
+- Facial recognition access control
+
+## Pages
+- Home: https://www.aionwellness.pro/
+- Solutions: https://www.aionwellness.pro/soluciones
+- Problems: https://www.aionwellness.pro/problemas
+- Benefits: https://www.aionwellness.pro/beneficios
+- How it works: https://www.aionwellness.pro/como-funciona
+- FAQ: https://www.aionwellness.pro/preguntas
+- Contact: https://www.aionwellness.pro/contacto
 
 ## Contact
-- Website: https://www.aionwellness.pro/
-- Canonical: https://www.aionwellness.pro/
+- WhatsApp Venezuela: +58 424-4587200
+- WhatsApp Argentina: +54 9 11 7367-8601
+- Instagram: https://www.instagram.com/nextwrld.tech/
+- Email: contact@nextwrld.com
 
 ## Languages
 - Spanish (es-VE) — primary

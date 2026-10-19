@@ -2,6 +2,22 @@
 
 Sitio comercial bilingüe de AION. Presenta la propuesta de valor, explica el flujo operativo y recibe solicitudes de demostración.
 
+## Sitio multipágina (NW-AION-2.0)
+
+| Ruta | Página |
+|---|---|
+| `/` | Home (landing original, sin cambios de contenido) |
+| `/soluciones` y `/soluciones/<segmento>` | Índice y seis segmentos: gimnasios, boxes-funcional, estudios, centros-deportivos, instituciones-deportivas, multisede |
+| `/problemas`, `/beneficios`, `/como-funciona`, `/preguntas`, `/contacto` | Páginas informativas |
+| `/404` | Página no encontrada (`noindex`) |
+
+- Rutas: `src/site/routes.ts` (fuente única). Enrutado con `react-router` (`BrowserRouter` en cliente, `StaticRouter` en prerender).
+- Textos: `src/i18n/site.ts` (compartidos) y `src/i18n/pages/*.ts` (por página), ES/EN con la misma estructura tipada. El Home sigue usando `src/i18n/content.ts`.
+- SEO por ruta: `src/site/seo.ts` genera title, description, canonical, Open Graph, `BreadcrumbList` y `FAQPage`. El prerender reemplaza el bloque `<!--seo:start-->…<!--seo:end-->` de `index.html` y genera `dist/sitemap.xml`.
+- Build: `dist/index.html`, `dist/<ruta>/index.html` y `dist/404.html`. El hosting debe servir `/<ruta>` desde `/<ruta>/index.html` (comportamiento por defecto de Cloudflare Pages y Netlify) y `404.html` para rutas desconocidas. `vite preview` hace fallback SPA y sirve el HTML del Home en `/problemas`; para revisar el HTML prerenderizado usar `/problemas/`.
+- Vite usa `base: '/'` para que las rutas anidadas resuelvan `/assets` desde la raíz.
+- Testimonios: son ejemplos ilustrativos y la página lo indica. Reemplazarlos en `src/i18n/site.ts` cuando haya casos reales.
+
 ## Stack
 
 - React 19 y TypeScript
@@ -35,7 +51,7 @@ npx tsc -p tsconfig.worker.json --noEmit   # type-check Worker (api/ con @cloudf
 npx wrangler deploy --dry-run               # valida bundle + bindings sin desplegar
 ```
 
-La landing no dispone todavía de una suite automatizada de pruebas (config `strict_tdd: false`, `runner: none`). La matriz del handler se valida con dobles/smoke local (ver docs de contacto).
+Pruebas con Vitest (`corepack pnpm test`): cliente de contacto, diagnósticos, handler y rutas/SEO del sitio (`src/site/seo.spec.ts`).
 
 ## Contacto — `POST /api/contact` (Cloudflare Workers)
 
@@ -152,9 +168,9 @@ Operativo:
 Parcial o pendiente:
 
 - Los recursos descargables no realizan una entrega real.
-- El enlace móvil de inicio de sesión dirige a la sección demo.
+- El navbar ya no muestra "Iniciar sesión" (apuntaba a la sección demo). Volver a agregarlo cuando exista un login real.
 - No existe integración con un CRM.
-- La importación desde Excel mencionada en la FAQ no está implementada en el producto.
+- La importación desde Excel mencionada en la FAQ del Home no está implementada en el producto. La página `/preguntas` ya usa una respuesta correcta (acompañamiento en la carga de miembros).
 - No hay analítica de conversión ni telemetría de errores (más allá de logs estructurados del Worker).
 - Escapado HTML en cuerpo del correo: fuera de scope NEX-48 (hallazgo reportado).
 
