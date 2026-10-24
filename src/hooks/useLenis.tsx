@@ -9,6 +9,13 @@ gsap.registerPlugin(ScrollTrigger);
 
 const LenisContext = createContext<Lenis | null>(null);
 
+// Module-level handle so non-descendant code (route changes) can reset scroll.
+let currentLenis: Lenis | null = null;
+
+export function getLenis(): Lenis | null {
+  return currentLenis;
+}
+
 export function useLenisInstance() {
   return useContext(LenisContext);
 }
@@ -24,6 +31,7 @@ export function LenisProvider({ children }: { children: React.ReactNode }) {
     });
 
     lenisRef.current = lenis;
+    currentLenis = lenis;
 
     lenis.on('scroll', ScrollTrigger.update);
 
@@ -36,6 +44,7 @@ export function LenisProvider({ children }: { children: React.ReactNode }) {
     return () => {
       lenis.destroy();
       lenisRef.current = null;
+      if (currentLenis === lenis) currentLenis = null;
     };
   }, []);
 
