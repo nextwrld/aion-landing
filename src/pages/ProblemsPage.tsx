@@ -73,7 +73,7 @@ function Checklist() {
           <div className="mt-6 pt-6 border-t border-border-custom flex flex-col sm:flex-row sm:items-center gap-4 justify-between" aria-live="polite">
             <div>
               <div className="font-inter text-xs font-semibold uppercase tracking-[0.08em] text-text-light">{t.counter(count, t.items.length)}</div>
-              <p className="font-sora font-semibold text-base text-deep-blue mt-1">{message}</p>
+              <p className="font-display font-semibold text-base text-deep-blue mt-1">{message}</p>
             </div>
             {count > 0 && (
               <ButtonLink to={PATHS.contact} className="flex-shrink-0">
@@ -131,7 +131,7 @@ export default function ProblemsPage() {
                     </span>
                     <div>
                       <span className="font-inter text-xs font-semibold text-text-light">{String(i + 1).padStart(2, '0')}</span>
-                      <h3 className="font-sora font-semibold text-xl text-deep-blue leading-tight">{p.title}</h3>
+                      <h3 className="font-display font-semibold text-xl text-deep-blue leading-tight">{p.title}</h3>
                     </div>
                   </div>
                   <dl className="mt-6 flex flex-col gap-4 flex-1">

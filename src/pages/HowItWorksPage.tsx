@@ -54,7 +54,7 @@ export default function HowItWorksPage() {
                   </span>
                   <div>
                     <span className="font-inter text-xs font-semibold tracking-[0.08em] text-wellness">{String(i + 1).padStart(2, '0')}</span>
-                    <h3 className="font-sora font-semibold text-base text-deep-blue mt-1">{step.title}</h3>
+                    <h3 className="font-display font-semibold text-base text-deep-blue mt-1">{step.title}</h3>
                     <p className="font-inter text-sm text-text-secondary leading-relaxed mt-1.5 lg:max-w-[200px] lg:mx-auto">{step.description}</p>
                   </div>
                 </li>
@@ -96,7 +96,7 @@ export default function HowItWorksPage() {
                   <span className="w-12 h-12 rounded-xl bg-wellness-light flex items-center justify-center">
                     <Icon className="w-6 h-6 text-wellness" strokeWidth={1.5} aria-hidden="true" />
                   </span>
-                  <h3 className="font-sora font-semibold text-base text-deep-blue mt-5">{item.title}</h3>
+                  <h3 className="font-display font-semibold text-base text-deep-blue mt-5">{item.title}</h3>
                   <p className="font-inter text-sm text-text-secondary leading-relaxed mt-2">{item.description}</p>
                 </div>
               )

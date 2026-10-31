@@ -69,7 +69,7 @@ export default function SolutionsPage() {
                 <HelpCircle className="w-6 h-6 text-wellness" strokeWidth={1.5} aria-hidden="true" />
               </span>
               <div>
-                <h2 className="font-sora font-semibold text-lg text-deep-blue">{t.index.notListed.title}</h2>
+                <h2 className="font-display font-semibold text-lg text-deep-blue">{t.index.notListed.title}</h2>
                 <p className="font-inter text-sm text-text-secondary mt-1 max-w-[520px]">{t.index.notListed.text}</p>
               </div>
             </div>

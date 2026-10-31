@@ -7,7 +7,8 @@ import { useSite, useContent } from '../i18n/useContent'
 import { solutionsContent } from '../i18n/pages/solutions'
 import { PATHS, segmentPath, type PageKey } from '../site/routes'
 
-const LINKS: PageKey[] = ['problems', 'benefits', 'howItWorks', 'faq', 'contact']
+const DESKTOP_LINKS: PageKey[] = ['benefits', 'howItWorks', 'faq']
+const MOBILE_LINKS: PageKey[] = [...DESKTOP_LINKS, 'contact']
 
 const linkClass = (active: boolean) =>
   `relative font-inter text-sm font-medium transition-colors duration-200 hover:text-wellness ${active ? 'text-wellness' : 'text-text-secondary'}`
@@ -82,7 +83,7 @@ export default function Navbar() {
             <Logo variant="dark" className="min-w-0" />
           </Link>
 
-          <div className="hidden xl:flex items-center gap-7">
+          <div className="hidden xl:flex items-center gap-9">
             <div ref={dropdownRef} className="relative" onMouseEnter={openSolutions} onMouseLeave={scheduleClose}>
               <button
                 type="button"
@@ -109,15 +110,22 @@ export default function Navbar() {
                               `block rounded-xl px-3 py-2.5 transition-colors hover:bg-light-gray ${isActive ? 'bg-wellness-light' : ''}`
                             }
                           >
-                            <span className="block font-sora font-semibold text-sm text-deep-blue">{seg.name}</span>
+                            <span className="block font-display font-semibold text-sm text-deep-blue">{seg.name}</span>
                             <span className="block font-inter text-xs text-text-secondary mt-0.5 leading-snug">{seg.examples}</span>
                           </NavLink>
                         </li>
                       ))}
                     </ul>
                     <Link
+                      to={PATHS.problems}
+                      className="mt-2 block rounded-xl px-3 py-2.5 transition-colors hover:bg-light-gray"
+                    >
+                      <span className="block font-display font-semibold text-sm text-deep-blue">{s.pages.problems.label}</span>
+                      <span className="block font-inter text-xs text-text-secondary mt-0.5 leading-snug">{s.nav.challengesHint}</span>
+                    </Link>
+                    <Link
                       to={PATHS.solutions}
-                      className="mt-2 flex items-center justify-between rounded-xl px-3 py-2.5 bg-light-gray font-inter text-sm font-semibold text-wellness hover:bg-wellness-light transition-colors"
+                      className="mt-1 flex items-center justify-between rounded-xl px-3 py-2.5 bg-light-gray font-inter text-sm font-semibold text-wellness hover:bg-wellness-light transition-colors"
                     >
                       {s.nav.allSolutions}
                       <ArrowRight className="w-4 h-4" aria-hidden="true" />
@@ -126,7 +134,7 @@ export default function Navbar() {
                 </div>
               )}
             </div>
-            {LINKS.map((key) => (
+            {DESKTOP_LINKS.map((key) => (
               <NavLink key={key} to={PATHS[key]} className={({ isActive }) => linkClass(isActive)}>
                 {({ isActive }) => (
                   <>
@@ -189,8 +197,16 @@ export default function Navbar() {
                     </NavLink>
                   </li>
                 ))}
+                <li>
+                  <NavLink
+                    to={PATHS.problems}
+                    className={({ isActive }) => `block font-inter text-sm py-1.5 ${isActive ? 'text-wellness font-medium' : 'text-text-secondary'}`}
+                  >
+                    {s.pages.problems.label}
+                  </NavLink>
+                </li>
               </ul>
-              {LINKS.map((key) => (
+              {MOBILE_LINKS.map((key) => (
                 <NavLink
                   key={key}
                   to={PATHS[key]}

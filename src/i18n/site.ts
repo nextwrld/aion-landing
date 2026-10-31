@@ -22,9 +22,9 @@ const es = {
         'AION se adapta a gimnasios, boxes de entrenamiento funcional, estudios, centros deportivos, instituciones deportivas y cadenas con varias sedes.',
     },
     problems: {
-      label: 'Problemas',
-      description: 'Los problemas más comunes al gestionar un gimnasio y cómo resolverlos.',
-      title: 'Problemas comunes en la gestión de gimnasios | AION Wellness',
+      label: 'Desafíos',
+      description: 'Los desafíos más comunes al gestionar un gimnasio y cómo resolverlos.',
+      title: 'Desafíos comunes en la gestión de gimnasios | AION Wellness',
       metaDescription:
         'Información dispersa, pagos sin registrar, renovaciones perdidas y control de acceso manual. Descubre cómo AION resuelve los problemas diarios de tu gimnasio.',
     },
@@ -64,6 +64,7 @@ const es = {
     closeMenu: 'Cerrar menú',
     solutionsMenu: 'Soluciones por tipo de negocio',
     allSolutions: 'Ver todas las soluciones',
+    challengesHint: 'Lo que frena a tu gimnasio hoy',
     demo: 'Solicitar demo',
     homeAria: 'AION Wellness, ir al inicio',
   },
@@ -190,9 +191,9 @@ const en: SiteContent = {
         'AION adapts to gyms, functional training boxes, studios, sports centers, sports institutions and multi-location chains.',
     },
     problems: {
-      label: 'Problems',
-      description: 'The most common problems when running a gym and how to solve them.',
-      title: 'Common gym management problems | AION Wellness',
+      label: 'Challenges',
+      description: 'The most common challenges when running a gym and how to solve them.',
+      title: 'Common gym management challenges | AION Wellness',
       metaDescription:
         'Scattered information, unrecorded payments, missed renewals and manual access control. See how AION solves the daily problems of your gym.',
     },
@@ -232,6 +233,7 @@ const en: SiteContent = {
     closeMenu: 'Close menu',
     solutionsMenu: 'Solutions by business type',
     allSolutions: 'See all solutions',
+    challengesHint: 'What holds your gym back today',
     demo: 'Request demo',
     homeAria: 'AION Wellness, go to home',
   },

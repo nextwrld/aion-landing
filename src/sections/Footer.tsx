@@ -32,7 +32,7 @@ export default function Footer() {
           </div>
 
           <div>
-            <h2 className="font-sora font-semibold text-sm text-white mb-4">{s.footer.productTitle}</h2>
+            <h2 className="font-display font-semibold text-sm text-white mb-4">{s.footer.productTitle}</h2>
             <ul className="flex flex-col gap-3">
               {PRODUCT_LINKS.map((key) => (
                 <li key={key}>
@@ -43,7 +43,7 @@ export default function Footer() {
           </div>
 
           <div>
-            <h2 className="font-sora font-semibold text-sm text-white mb-4">{s.footer.solutionsTitle}</h2>
+            <h2 className="font-display font-semibold text-sm text-white mb-4">{s.footer.solutionsTitle}</h2>
             <ul className="flex flex-col gap-3">
               {solutions.segments.map((seg) => (
                 <li key={seg.slug}>
@@ -54,7 +54,7 @@ export default function Footer() {
           </div>
 
           <div>
-            <h2 className="font-sora font-semibold text-sm text-white mb-4">{s.footer.contactTitle}</h2>
+            <h2 className="font-display font-semibold text-sm text-white mb-4">{s.footer.contactTitle}</h2>
             <ul className="flex flex-col gap-3">
               {CONTACT.whatsapp.map((wa) => (
                 <li key={wa.number}>

@@ -34,7 +34,7 @@ export default function ModuleCards({ keys }: { keys?: ModuleKey[] }) {
               </span>
               <span className="font-inter text-xs font-semibold tracking-[0.06em] uppercase text-wellness">{m.badge}</span>
             </div>
-            <h3 className="font-sora font-semibold text-base text-deep-blue mt-4 leading-snug">{m.title}</h3>
+            <h3 className="font-display font-semibold text-base text-deep-blue mt-4 leading-snug">{m.title}</h3>
             <ArrowRight className="w-4 h-4 text-wellness mt-3 group-hover:translate-x-1 transition-transform" aria-hidden="true" />
           </Link>
         )

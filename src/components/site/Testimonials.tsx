@@ -30,11 +30,11 @@ export default function Testimonials({ limit, className = 'bg-light-gray' }: { l
               <Quote className="w-7 h-7 text-wellness/40" aria-hidden="true" />
               <blockquote className="font-inter text-base text-text-primary leading-relaxed mt-3 flex-1">“{t.quote}”</blockquote>
               <figcaption className="flex items-center gap-3 mt-6">
-                <span className="w-11 h-11 rounded-full bg-wellness-light text-wellness-dark font-sora font-semibold text-sm flex items-center justify-center" aria-hidden="true">
+                <span className="w-11 h-11 rounded-full bg-wellness-light text-wellness-dark font-display font-semibold text-sm flex items-center justify-center" aria-hidden="true">
                   {initials(t.name)}
                 </span>
                 <span>
-                  <span className="block font-sora font-semibold text-sm text-deep-blue">{t.name}</span>
+                  <span className="block font-display font-semibold text-sm text-deep-blue">{t.name}</span>
                   <span className="block font-inter text-xs text-text-secondary">
                     {t.role} · {t.place}
                   </span>

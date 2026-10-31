@@ -29,7 +29,7 @@ export default function PageHero({ id, badge, title, subtitle, breadcrumbs, acti
             <h1
               id={id}
               data-reveal
-              className="font-sora font-bold text-[32px] sm:text-[40px] lg:text-[48px] leading-[1.12] tracking-[-0.02em] text-deep-blue text-balance"
+              className="font-display font-bold text-[32px] sm:text-[40px] lg:text-[48px] leading-[1.12] tracking-[-0.02em] text-deep-blue text-balance"
             >
               {title}
             </h1>

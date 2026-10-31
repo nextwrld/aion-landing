@@ -52,7 +52,7 @@ const es = {
     {
       key: 'access',
       badge: 'CONTROL DE ACCESO',
-      title: 'Sabe al instante quién puede entrar',
+      title: 'Verifica al instante quién tiene acceso',
       description:
         'La recepción ingresa el ID del cliente y AION verifica el estado de su membresía. Sin dudas ni conversaciones incómodas en la puerta.',
       bullets: [
@@ -123,7 +123,7 @@ const es = {
         role: 'Recepción',
         points: [
           'Encuentra a cualquier miembro en segundos.',
-          'Sabe al instante quién puede entrar.',
+          'Verifica al instante quién tiene acceso.',
           'Menos conversaciones incómodas en la puerta.',
         ],
       },

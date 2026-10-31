@@ -51,7 +51,7 @@ function Segment({ slug }: { slug: SegmentSlug }) {
                 <span className="w-11 h-11 rounded-xl bg-red-50 flex items-center justify-center">
                   <AlertTriangle className="w-5 h-5 text-red-500" strokeWidth={1.75} aria-hidden="true" />
                 </span>
-                <h3 className="font-sora font-semibold text-lg text-deep-blue mt-5">{p.title}</h3>
+                <h3 className="font-display font-semibold text-lg text-deep-blue mt-5">{p.title}</h3>
                 <p className="font-inter text-sm text-text-secondary leading-relaxed mt-2">{p.description}</p>
               </div>
             ))}
@@ -69,7 +69,7 @@ function Segment({ slug }: { slug: SegmentSlug }) {
                   <Check className="w-4 h-4 text-white" strokeWidth={3} aria-hidden="true" />
                 </span>
                 <div>
-                  <h3 className="font-sora font-semibold text-base text-deep-blue">{u.title}</h3>
+                  <h3 className="font-display font-semibold text-base text-deep-blue">{u.title}</h3>
                   <p className="font-inter text-sm text-text-secondary leading-relaxed mt-1.5">{u.description}</p>
                 </div>
               </div>
@@ -105,7 +105,7 @@ function Segment({ slug }: { slug: SegmentSlug }) {
 
       <section aria-labelledby="other-segments-heading" className="bg-white py-16 sm:py-20">
         <div className="section-container">
-          <h2 id="other-segments-heading" data-reveal className="font-sora font-semibold text-2xl text-deep-blue mb-8">
+          <h2 id="other-segments-heading" data-reveal className="font-display font-semibold text-2xl text-deep-blue mb-8">
             {labels.otherSegments}
           </h2>
           <SegmentCards exclude={slug} compact />

@@ -28,14 +28,14 @@ export default function FrontDeskSection() {
               <img src="/assets/front-desk.jpg" alt={c.frontDesk.imageAlt} className="w-full h-[300px] sm:h-[380px] lg:h-[480px] object-cover" />
               <div className="absolute bottom-4 left-4 bg-white/95 backdrop-blur-sm rounded-lg px-4 py-3 shadow-lg flex items-center gap-3">
                 <div className="w-10 h-10 rounded-full bg-wellness-light flex items-center justify-center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#22C55E" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg></div>
-                <div><div className="font-sora font-semibold text-sm text-deep-blue">{c.frontDesk.accessAllowed}</div><div className="font-inter text-xs text-text-secondary">{c.frontDesk.realTimeValidation}</div></div>
+                <div><div className="font-display font-semibold text-sm text-deep-blue">{c.frontDesk.accessAllowed}</div><div className="font-inter text-xs text-text-secondary">{c.frontDesk.realTimeValidation}</div></div>
               </div>
             </div>
           </div>
 
           <div className="fd-text">
             <span className="font-inter text-xs font-semibold tracking-[0.08em] uppercase text-wellness">{c.frontDesk.badge}</span>
-            <h2 id="frontdesk-heading" className="font-sora font-semibold text-[28px] sm:text-[32px] lg:text-[36px] leading-[1.25] tracking-[-0.01em] text-deep-blue mt-3">{c.frontDesk.title}</h2>
+            <h2 id="frontdesk-heading" className="font-display font-semibold text-[28px] sm:text-[32px] lg:text-[36px] leading-[1.25] tracking-[-0.01em] text-deep-blue mt-3">{c.frontDesk.title}</h2>
             <p className="font-inter text-base text-text-primary mt-5 max-w-[460px] leading-relaxed">{c.frontDesk.description}</p>
 
             <div className="mt-6 flex flex-col gap-3">

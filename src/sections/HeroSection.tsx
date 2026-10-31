@@ -13,7 +13,7 @@ function DashboardMockup() {
         <div className="px-5 py-4 border-b border-border-custom flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 rounded-lg gradient-cta flex items-center justify-center"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M4 15V9M20 15V9M8 12H16M12 8V16" stroke="white" strokeWidth="2.5" strokeLinecap="round"/><circle cx="12" cy="12" r="3" stroke="white" strokeWidth="2"/></svg></div>
-            <span className="font-sora font-semibold text-sm text-deep-blue">{c.hero.mockup.summary}</span>
+            <span className="font-display font-semibold text-sm text-deep-blue">{c.hero.mockup.summary}</span>
           </div>
           <div className="h-1 w-8 bg-wellness rounded-full" />
         </div>
@@ -21,7 +21,7 @@ function DashboardMockup() {
         <div className="grid grid-cols-4 gap-3 p-4">
           {c.hero.mockup.statLabels.map((label, i) => (
             <div key={label} className="text-center">
-              <div className={`font-sora font-bold text-lg ${['text-wellness','text-energy','text-deep-blue','text-wellness-dark'][i]}`}>{['1,248','103','$45,680','—'][i]}</div>
+              <div className={`font-display font-bold text-lg ${['text-wellness','text-energy','text-deep-blue','text-wellness-dark'][i]}`}>{['1,248','103','$45,680','—'][i]}</div>
               <div className="text-[10px] text-text-secondary font-inter mt-0.5 leading-tight">{label}</div>
             </div>
           ))}
@@ -85,7 +85,7 @@ export default function HeroSection() {
       <div className="section-container w-full"><div className="grid lg:grid-cols-[55%_45%] gap-12 items-center">
         <div className="order-2 lg:order-1 text-center lg:text-left">
           <span className="inline-block font-inter text-xs font-semibold tracking-[0.08em] uppercase text-wellness mb-4">{c.hero.badge}</span>
-          <h1 id="hero-heading" ref={headlineRef} className="font-sora font-bold text-[32px] sm:text-[40px] lg:text-[48px] leading-[1.12] tracking-[-0.02em] text-deep-blue max-w-[560px] mx-auto lg:mx-0" style={{ textWrap: 'balance' }}>{c.hero.title}</h1>
+          <h1 id="hero-heading" ref={headlineRef} className="font-display font-bold text-[32px] sm:text-[40px] lg:text-[48px] leading-[1.12] tracking-[-0.02em] text-deep-blue max-w-[560px] mx-auto lg:mx-0" style={{ textWrap: 'balance' }}>{c.hero.title}</h1>
           <div ref={subRef}><p className="font-inter text-base text-text-secondary mt-5 max-w-[480px] mx-auto lg:mx-0 leading-relaxed">{c.hero.subtitle}</p></div>
           <p ref={positioningRef} className="font-inter text-sm text-text-secondary mt-3 max-w-[480px] mx-auto lg:mx-0 leading-relaxed">{c.hero.positioning}</p>
           <div ref={ctaRef} className="mt-8"><a href="#demo" className="gradient-cta text-white font-inter text-[15px] font-semibold px-7 py-3.5 rounded-[10px] shadow-btn hover:shadow-btn-hover hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 inline-flex items-center gap-2 group">{c.hero.cta}<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="group-hover:translate-x-1 transition-transform" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7" /></svg></a></div>

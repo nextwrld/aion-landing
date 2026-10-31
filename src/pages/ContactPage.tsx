@@ -90,7 +90,7 @@ export default function ContactPage() {
               >
                 <span className="w-12 h-12 rounded-xl bg-wellness-light text-wellness flex items-center justify-center">{ch.icon}</span>
                 <span className="font-inter text-xs font-semibold uppercase tracking-[0.06em] text-text-light mt-5">{ch.label}</span>
-                <span className="font-sora font-semibold text-base text-deep-blue mt-1 break-all">{ch.value}</span>
+                <span className="font-display font-semibold text-base text-deep-blue mt-1 break-all">{ch.value}</span>
                 <span className="mt-4 font-inter text-sm font-semibold text-wellness group-hover:text-wellness-dark">{ch.cta} →</span>
               </a>
             ))}
@@ -112,7 +112,7 @@ export default function ContactPage() {
                     </span>
                     <span className="font-inter text-xs font-semibold tracking-[0.08em] text-wellness">{String(i + 1).padStart(2, '0')}</span>
                   </div>
-                  <h3 className="font-sora font-semibold text-base text-deep-blue mt-4">{step.title}</h3>
+                  <h3 className="font-display font-semibold text-base text-deep-blue mt-4">{step.title}</h3>
                   <p className="font-inter text-sm text-text-secondary leading-relaxed mt-1.5">{step.description}</p>
                 </li>
               )

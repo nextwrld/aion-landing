@@ -14,7 +14,7 @@ export default function Logo({ variant = 'dark', className = '' }: LogoProps) {
     <div className={`flex items-center gap-2 ${className}`} role="img" aria-label="AION Wellness">
       <img src="/assets/logo.svg" alt="" aria-hidden="true" className="h-9 w-auto flex-shrink-0" />
       <div className="flex flex-col min-w-0">
-        <span className="font-sora font-bold text-base sm:text-lg leading-tight tracking-tight truncate" style={{ color: textColor }}>
+        <span className="font-display font-bold text-base sm:text-lg leading-tight tracking-tight truncate" style={{ color: textColor }}>
           AION Wellness
         </span>
         <span className="hidden sm:block text-[8px] font-inter font-semibold tracking-[0.15em] uppercase leading-tight" style={{ color: taglineColor }}>

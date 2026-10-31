@@ -12,7 +12,7 @@ function Frame({ title, icon, children }: { title: string; icon: ReactNode; chil
       <div className="px-5 py-3.5 border-b border-border-custom flex items-center justify-between">
         <div className="flex items-center gap-2.5">
           <div className="w-7 h-7 rounded-lg gradient-cta flex items-center justify-center text-white">{icon}</div>
-          <span className="font-sora font-semibold text-sm text-deep-blue">{title}</span>
+          <span className="font-display font-semibold text-sm text-deep-blue">{title}</span>
         </div>
         <div className="flex gap-1">
           <span className="w-2 h-2 rounded-full bg-border-custom" />
@@ -39,7 +39,7 @@ function StatusPill({ status }: { status: Status }) {
 
 function Avatar({ name }: { name: string }) {
   const letters = name.split(' ').map((p) => p[0]).join('').slice(0, 2)
-  return <span className="w-8 h-8 rounded-full bg-light-gray text-deep-blue font-sora font-semibold text-[11px] flex items-center justify-center flex-shrink-0">{letters}</span>
+  return <span className="w-8 h-8 rounded-full bg-light-gray text-deep-blue font-display font-semibold text-[11px] flex items-center justify-center flex-shrink-0">{letters}</span>
 }
 
 const MEMBERS: { name: string; id: string; status: Status; days: number }[] = [
@@ -64,7 +64,7 @@ function SearchMock() {
         <div className="flex items-center gap-3">
           <Avatar name={member.name} />
           <div className="min-w-0">
-            <div className="font-sora font-semibold text-sm text-deep-blue">{member.name}</div>
+            <div className="font-display font-semibold text-sm text-deep-blue">{member.name}</div>
             <div className="font-inter text-xs text-text-secondary">{member.id}</div>
           </div>
           <span className="ml-auto"><StatusPill status={member.status} /></span>
@@ -72,11 +72,11 @@ function SearchMock() {
         <div className="grid grid-cols-2 gap-3 mt-4">
           <div className="bg-light-gray rounded-lg p-2.5">
             <div className="font-inter text-[10px] text-text-light">{m.plan}</div>
-            <div className="font-sora font-semibold text-xs text-deep-blue">{m.monthly}</div>
+            <div className="font-display font-semibold text-xs text-deep-blue">{m.monthly}</div>
           </div>
           <div className="bg-light-gray rounded-lg p-2.5">
             <div className="font-inter text-[10px] text-text-light">{m.expiresIn}</div>
-            <div className="font-sora font-semibold text-xs text-deep-blue">{member.days} {m.days}</div>
+            <div className="font-display font-semibold text-xs text-deep-blue">{member.days} {m.days}</div>
           </div>
         </div>
       </div>
@@ -91,7 +91,7 @@ function MembershipsMock() {
       <div className="flex gap-2 mb-4">
         {(['ok', 'grace', 'expired'] as Status[]).map((st, i) => (
           <div key={st} className="flex-1 bg-light-gray rounded-lg p-2.5 text-center">
-            <div className={`font-sora font-bold text-lg ${['text-wellness', 'text-amber-600', 'text-red-500'][i]}`}>{['186', '12', '9'][i]}</div>
+            <div className={`font-display font-bold text-lg ${['text-wellness', 'text-amber-600', 'text-red-500'][i]}`}>{['186', '12', '9'][i]}</div>
             <StatusPill status={st} />
           </div>
         ))}
@@ -119,13 +119,13 @@ function BillingMock() {
       <div className="flex items-center gap-3 pb-4 border-b border-border-custom">
         <Avatar name={MEMBERS[1].name} />
         <div>
-          <div className="font-sora font-semibold text-sm text-deep-blue">{MEMBERS[1].name}</div>
+          <div className="font-display font-semibold text-sm text-deep-blue">{MEMBERS[1].name}</div>
           <div className="font-inter text-xs text-text-secondary">{m.plan}: {m.monthly}</div>
         </div>
       </div>
       <div className="mt-4">
         <div className="font-inter text-[11px] text-text-light mb-1">{m.amount}</div>
-        <div className="font-sora font-bold text-2xl text-deep-blue">$25,00</div>
+        <div className="font-display font-bold text-2xl text-deep-blue">$25,00</div>
       </div>
       <div className="mt-4">
         <div className="font-inter text-[11px] text-text-light mb-2">{m.method}</div>
@@ -152,19 +152,19 @@ function AccessMock() {
       <div className="font-inter text-[11px] text-text-light mb-1.5">{m.clientId}</div>
       <div className="flex items-center gap-2 border-[1.5px] border-border-custom rounded-[10px] px-3 py-2.5">
         <IdCard className="w-4 h-4 text-text-light" />
-        <span className="font-sora font-semibold text-sm tracking-wider text-deep-blue">18456789</span>
+        <span className="font-display font-semibold text-sm tracking-wider text-deep-blue">18456789</span>
       </div>
       <div className="mt-4 rounded-xl bg-wellness-light border border-wellness/30 p-4 flex items-center gap-3">
         <span className="w-11 h-11 rounded-full bg-wellness flex items-center justify-center text-white"><Check className="w-6 h-6" strokeWidth={3} /></span>
         <div>
-          <div className="font-sora font-semibold text-base text-wellness-dark">{m.accessAllowed}</div>
+          <div className="font-display font-semibold text-base text-wellness-dark">{m.accessAllowed}</div>
           <div className="font-inter text-xs text-text-secondary">{MEMBERS[0].name} · {m.checkinSaved}</div>
         </div>
       </div>
       <div className="mt-3 rounded-xl bg-red-50 border border-red-100 p-3 flex items-center gap-3 opacity-80">
         <span className="w-8 h-8 rounded-full bg-red-500 flex items-center justify-center text-white"><X className="w-4 h-4" strokeWidth={3} /></span>
         <div>
-          <div className="font-sora font-semibold text-sm text-red-600">{m.accessDenied}</div>
+          <div className="font-display font-semibold text-sm text-red-600">{m.accessDenied}</div>
           <div className="font-inter text-[11px] text-text-secondary">{MEMBERS[2].name}</div>
         </div>
       </div>
@@ -185,17 +185,17 @@ function CashMock() {
         {rows.map((r) => (
           <li key={r.label} className="flex items-center justify-between bg-light-gray rounded-lg px-3 py-2.5">
             <span className="font-inter text-sm text-text-primary">{r.label}</span>
-            <span className="font-sora font-semibold text-sm text-deep-blue">{r.value}</span>
+            <span className="font-display font-semibold text-sm text-deep-blue">{r.value}</span>
           </li>
         ))}
       </ul>
       <div className="mt-4 pt-4 border-t border-border-custom flex items-center justify-between">
         <span className="font-inter text-sm text-text-secondary">{m.total}</span>
-        <span className="font-sora font-bold text-xl text-deep-blue">$1.275,00</span>
+        <span className="font-display font-bold text-xl text-deep-blue">$1.275,00</span>
       </div>
       <div className="mt-2 flex items-center justify-between">
         <span className="font-inter text-sm text-text-secondary">{m.difference}</span>
-        <span className="inline-flex items-center gap-1 font-sora font-semibold text-sm text-wellness"><Check className="w-4 h-4" strokeWidth={3} />$0,00</span>
+        <span className="inline-flex items-center gap-1 font-display font-semibold text-sm text-wellness"><Check className="w-4 h-4" strokeWidth={3} />$0,00</span>
       </div>
     </Frame>
   )
@@ -209,11 +209,11 @@ function ReportsMock() {
       <div className="grid grid-cols-2 gap-3 mb-5">
         <div className="bg-light-gray rounded-lg p-3">
           <div className="font-inter text-[10px] text-text-light">{m.activeMembers}</div>
-          <div className="font-sora font-bold text-lg text-deep-blue">1.248</div>
+          <div className="font-display font-bold text-lg text-deep-blue">1.248</div>
         </div>
         <div className="bg-light-gray rounded-lg p-3">
           <div className="font-inter text-[10px] text-text-light">{m.checkins}</div>
-          <div className="font-sora font-bold text-lg text-wellness">3.902</div>
+          <div className="font-display font-bold text-lg text-wellness">3.902</div>
         </div>
       </div>
       <div className="flex items-end gap-3 h-[120px]">
@@ -245,8 +245,8 @@ function BranchesMock() {
         {m.branchNames.map((name, i) => (
           <li key={name} className="rounded-lg border border-border-custom p-3">
             <div className="flex items-center justify-between">
-              <span className="font-sora font-semibold text-sm text-deep-blue">{name}</span>
-              <span className="font-sora font-semibold text-sm text-deep-blue">{values[i].revenue}</span>
+              <span className="font-display font-semibold text-sm text-deep-blue">{name}</span>
+              <span className="font-display font-semibold text-sm text-deep-blue">{values[i].revenue}</span>
             </div>
             <div className="flex items-center gap-3 mt-2">
               <div className="flex-1 h-1.5 rounded-full bg-light-gray overflow-hidden">

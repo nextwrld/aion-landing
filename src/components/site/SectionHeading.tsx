@@ -20,7 +20,7 @@ export default function SectionHeading({ id, badge, title, subtitle, align = 'ce
       )}
       <Heading
         id={id}
-        className="font-sora font-semibold text-[28px] sm:text-[32px] lg:text-[36px] leading-[1.25] tracking-[-0.01em] text-deep-blue text-balance"
+        className="font-display font-semibold text-[28px] sm:text-[32px] lg:text-[36px] leading-[1.25] tracking-[-0.01em] text-deep-blue text-balance"
       >
         {title}
       </Heading>
