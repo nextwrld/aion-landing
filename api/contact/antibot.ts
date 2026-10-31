@@ -45,6 +45,9 @@ export type TurnstileVerifierOptions = {
   secret?: string;
   timeoutMs?: number;
   fetchImpl?: typeof fetch;
+  // When set, siteverify must also return this action and one of these hostnames.
+  expectedAction?: string;
+  expectedHostnames?: string[];
 };
 
 const TURNSTILE_URL = "https://challenges.cloudflare.com/turnstile/v0/siteverify";
@@ -54,15 +57,24 @@ export class TurnstileVerifier implements AntiBotVerifier {
   private secret: string | undefined;
   private timeoutMs: number;
   private fetchImpl: typeof fetch;
+  private expectedAction: string | undefined;
+  private expectedHostnames: Set<string> | undefined;
 
   constructor(opts: TurnstileVerifierOptions = {}) {
     this.secret = opts.secret;
     this.timeoutMs = opts.timeoutMs ?? DEFAULT_VERIFY_TIMEOUT_MS;
     this.fetchImpl = opts.fetchImpl ?? fetch;
+    this.expectedAction = opts.expectedAction;
+    this.expectedHostnames = opts.expectedHostnames
+      ? new Set(opts.expectedHostnames.map((h) => h.trim()).filter(Boolean))
+      : undefined;
   }
 
   async verify(input: { token?: string; remoteIp: string | null }): Promise<AntiBotDecision> {
     if (!this.secret || this.secret.trim() === "") {
+      return { kind: "unavailable", reason: "configuration" };
+    }
+    if (this.expectedHostnames !== undefined && this.expectedHostnames.size === 0) {
       return { kind: "unavailable", reason: "configuration" };
     }
 
@@ -113,6 +125,16 @@ export class TurnstileVerifier implements AntiBotVerifier {
         typeof data === "object" &&
         (data as Record<string, unknown>).success === true
       ) {
+        const rec = data as Record<string, unknown>;
+        if (this.expectedAction !== undefined && rec.action !== this.expectedAction) {
+          return { kind: "invalid", reason: "action_mismatch" };
+        }
+        if (
+          this.expectedHostnames !== undefined &&
+          !(typeof rec.hostname === "string" && this.expectedHostnames.has(rec.hostname))
+        ) {
+          return { kind: "invalid", reason: "hostname_mismatch" };
+        }
         return { kind: "valid" };
       }
 

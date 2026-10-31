@@ -5,6 +5,7 @@ import type { EmailDelivery, EmailMessage } from "./email-delivery";
 import { getOriginInfo } from "./origin";
 import type { RateLimiter } from "./rate-limiter";
 import type { AntiBotVerifier } from "./antibot";
+import type { TrialSignupClient } from "./trial-signup";
 import { createSafeEvent, getReporter } from "./diagnostics.js";
 import type { Reporter } from "./diagnostics.js";
 
@@ -17,6 +18,8 @@ export type HandlerDeps = {
   emailFrom: string;
   emailTo: string;
   verifier?: AntiBotVerifier | null;
+  // Set = the form starts a self-serve trial, and anti-bot checks fail closed.
+  trialSignup?: TrialSignupClient | null;
   limiter?: RateLimiter | null;
   rateLimit?: { limit: number; windowSeconds: number };
   // logger factory or instance
@@ -66,6 +69,7 @@ function errorBody(code: string, requestId: string): unknown {
     verification_failed: "Verification failed",
     rate_limited: "Too many requests",
     delivery_failed: "Unable to send message. Please try again later.",
+    service_unavailable: "Unable to process the request. Please try again later.",
   };
   return { error: { code, message: messages[code] ?? "Request failed", request_id: requestId } };
 }
@@ -104,6 +108,16 @@ export function createContactHandler(deps: HandlerDeps) {
       deps.createLogger?.(requestId) ?? deps.logger ?? createJsonLogger(requestId);
     const getOrigin = deps.getOriginInfo ?? ((req: Request) => getOriginInfo(req, deps.hashKey));
     const duration = () => Date.now() - start;
+    const trialMode = Boolean(deps.trialSignup);
+    const failClosed = (reason: string) => {
+      logger.warn("contact.blocked", {
+        reason,
+        http_status: 503,
+        duration_ms: duration(),
+        request_id: requestId,
+      });
+      return jsonResponse(errorBody("service_unavailable", requestId), 503, requestId);
+    };
 
     if (request.method !== "POST") {
       logger.warn("contact.blocked", {
@@ -265,9 +279,11 @@ export function createContactHandler(deps: HandlerDeps) {
             duration_ms: duration(),
             request_id: requestId,
           });
-          // fail-open: continue to rate limit / delivery
+          // fail-open for the plain contact form; a trial signup must not skip the check
+          if (trialMode) return failClosed("antibot_unavailable");
         }
       } catch {
+        if (trialMode) return failClosed("antibot_unavailable");
         // Verifier threw — treat as unavailable (fail-open) and continue
         logger.warn("contact.antibot.skip", {
           reason: "verifier_error",
@@ -284,6 +300,7 @@ export function createContactHandler(deps: HandlerDeps) {
       try {
         const origin = await getOrigin(request);
         if (!origin.originKey) {
+          if (trialMode) return failClosed("rate_limit_unavailable");
           logger.warn("contact.rate_limit.skip", {
             reason: "missing_origin",
             origin_fingerprint: origin.fingerprint ?? undefined,
@@ -313,6 +330,7 @@ export function createContactHandler(deps: HandlerDeps) {
             return jsonResponse(errorBody("rate_limited", requestId), 429, requestId, { "Retry-After": String(retryAfter) });
           }
           if (decision.kind === "unavailable") {
+            if (trialMode) return failClosed("rate_limit_unavailable");
             logger.warn("contact.rate_limit.skip", {
               reason: decision.reason,
               origin_fingerprint: origin.fingerprint ?? undefined,
@@ -323,6 +341,7 @@ export function createContactHandler(deps: HandlerDeps) {
           }
         }
       } catch {
+        if (trialMode) return failClosed("rate_limit_unavailable");
         logger.warn("contact.rate_limit.skip", {
           reason: "limiter_error",
           origin_fingerprint: undefined,
@@ -331,6 +350,10 @@ export function createContactHandler(deps: HandlerDeps) {
           request_id: requestId,
         });
       }
+    }
+
+    if (deps.trialSignup) {
+      return startTrial(deps.trialSignup);
     }
 
     // Build email and deliver exactly once — reuse renderContactEmail (already escapes HTML)
@@ -389,6 +412,42 @@ export function createContactHandler(deps: HandlerDeps) {
         request_id: requestId,
       });
       return jsonResponse(errorBody("delivery_failed", requestId), 500, requestId);
+    }
+
+    async function startTrial(client: TrialSignupClient): Promise<Response> {
+      const result = await client.request({
+        fullName: data.fullName,
+        email: data.email,
+        gymName: data.gymName,
+        phone: data.phone,
+      });
+      if (result.kind !== "accepted") {
+        reportOnce(reporter, requestId, "delivery_failed", 500);
+        logger.error("contact.trial_signup_failure", {
+          http_status: 500,
+          duration_ms: duration(),
+          request_id: requestId,
+        });
+        return jsonResponse(errorBody("delivery_failed", requestId), 500, requestId);
+      }
+      // The team email is only a notice: the prospect already got their link.
+      try {
+        await delivery.send({
+          from: emailFrom,
+          to: emailTo,
+          subject: `Prueba gratuita solicitada: ${data.fullName}`,
+          html: renderContactEmail(data),
+        });
+      } catch {
+        logger.warn("contact.team_notice_failure", { duration_ms: duration(), request_id: requestId });
+      }
+      logger.info("contact.submit", {
+        outcome: "trial_requested",
+        http_status: 200,
+        duration_ms: duration(),
+        request_id: requestId,
+      });
+      return jsonResponse({ success: true, request_id: requestId }, 200, requestId);
     }
   };
 }

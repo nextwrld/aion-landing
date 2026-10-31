@@ -6,6 +6,14 @@ TURNSTILE_SECRET_KEY=
 POSTMARK_SERVER_TOKEN=
 CONTACT_IP_HASH_KEY=
 
+# Self-serve trial. With both set, the form starts a trial in the backend and the
+# anti-bot checks fail closed (Turnstile and the KV rate limit must work).
+# TRIAL_SIGNUP_SECRET must equal the backend's TRIAL_SIGNUP_SECRET.
+TRIAL_SIGNUP_URL=
+TRIAL_SIGNUP_SECRET=
+# Frontend hostnames Turnstile must report (comma-separated). Never localhost in production.
+TURNSTILE_HOSTNAMES=
+
 # Optional overrides for local preview (if different from wrangler.toml [vars]):
 # CONTACT_ANTIBOT_ENABLED=true
 # CONTACT_RATE_LIMIT_ENABLED=true

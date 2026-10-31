@@ -14,6 +14,7 @@ import {
   parseAntibotEnabled,
   parseVerifyTimeoutMs,
 } from "./contact/antibot";
+import { BackendTrialSignupClient } from "./contact/trial-signup";
 
 export interface Env {
   CONTACT_RATE_LIMIT_KV?: KVNamespace;
@@ -30,6 +31,9 @@ export interface Env {
   EMAIL_HEADERS_TIMEOUT_MS?: string;
   EMAIL_TOTAL_TIMEOUT_MS?: string;
   TURNSTILE_VERIFY_TIMEOUT_MS?: string;
+  TURNSTILE_HOSTNAMES?: string;
+  TRIAL_SIGNUP_URL?: string;
+  TRIAL_SIGNUP_SECRET?: string;
 }
 
 function parseNumber(value: string | undefined, fallback: number): number {
@@ -53,10 +57,21 @@ export function createDependencies(env: Env, _ctx: ExecutionContext) {
   // Fase 4 — Anti-bot verifier wiring (kill-switch CONTACT_ANTIBOT_ENABLED)
   const antibotEnabled = parseAntibotEnabled(env.CONTACT_ANTIBOT_ENABLED, true);
   const verifyTimeoutMs = parseVerifyTimeoutMs(env.TURNSTILE_VERIFY_TIMEOUT_MS, 5_000);
+  // Self-serve trial: on only when both the backend URL and its shared secret exist.
+  const trialSignup =
+    env.TRIAL_SIGNUP_URL && env.TRIAL_SIGNUP_SECRET
+      ? new BackendTrialSignupClient({ url: env.TRIAL_SIGNUP_URL, secret: env.TRIAL_SIGNUP_SECRET })
+      : null;
   const verifier = antibotEnabled
     ? new TurnstileVerifier({
         secret: env.TURNSTILE_SECRET_KEY,
         timeoutMs: verifyTimeoutMs,
+        ...(trialSignup
+          ? {
+              expectedAction: "trial_signup",
+              expectedHostnames: (env.TURNSTILE_HOSTNAMES ?? "").split(","),
+            }
+          : {}),
       })
     : new NoOpAntiBotVerifier();
 
@@ -77,6 +92,7 @@ export function createDependencies(env: Env, _ctx: ExecutionContext) {
     emailTo: env.EMAIL_TO ?? env.EMAIL_FROM ?? "contact@nextwrld.com",
     verifier,
     limiter,
+    trialSignup,
     rateLimit: { limit: rateLimitMax, windowSeconds: rateLimitWindowSeconds },
     createLogger: (requestId: string) => createJsonLogger(requestId),
     getOriginInfo: (req: Request) => getOriginInfo(req, env.CONTACT_IP_HASH_KEY),

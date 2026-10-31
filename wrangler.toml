@@ -34,5 +34,8 @@ POSTMARK_MESSAGE_STREAM = "outbound"
 #   TURNSTILE_SECRET_KEY
 #   POSTMARK_SERVER_TOKEN
 #   CONTACT_IP_HASH_KEY
+#   TRIAL_SIGNUP_SECRET   (self-serve trial; same value as the backend's)
+# Self-serve trial vars (set per environment): TRIAL_SIGNUP_URL, TURNSTILE_HOSTNAMES.
+# Frontend build: VITE_TURNSTILE_SITE_KEY renders the widget (action "trial_signup").
 # Set with: wrangler secret put <NAME>
 # Local dev: copy .dev.vars.example → .dev.vars (gitignored)

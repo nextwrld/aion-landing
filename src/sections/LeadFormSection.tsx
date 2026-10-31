@@ -4,6 +4,10 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { Check, User, Building2, Mail, Phone, Loader2 } from 'lucide-react';
 import { useI18n } from '../i18n/I18nProvider';
 import { submitContact } from '../lib/contactClient';
+import { useSite } from '../i18n/useContent';
+import { CONTACT, whatsappUrl } from '../site/contact';
+import { WhatsAppIcon } from '../components/site/BrandIcons';
+import TurnstileWidget from '../components/site/TurnstileWidget';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -18,7 +22,9 @@ type LeadFormData = {
   mensaje: string;
 };
 
-async function submitLeadForm(data: LeadFormData) {
+const TURNSTILE_SITE_KEY = import.meta.env.VITE_TURNSTILE_SITE_KEY as string | undefined;
+
+async function submitLeadForm(data: LeadFormData, turnstileToken: string | null) {
   const payload = {
     fullName: data.nombre,
     email: data.email,
@@ -26,12 +32,16 @@ async function submitLeadForm(data: LeadFormData) {
     gymName: data.gimnasio,
     members: data.miembros,
     message: data.mensaje,
+    ...(turnstileToken ? { turnstileToken } : {}),
   };
   await submitContact(payload);
 }
 
 export default function LeadFormSection() {
   const { c } = useI18n()
+  const s = useSite()
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
+  const [turnstileReset, setTurnstileReset] = useState(0);
   const sectionRef = useRef<HTMLElement>(null);
   const [formState, setFormState] = useState<FormState>('idle');
   const [formData, setFormData] = useState({ nombre: '', gimnasio: '', email: '', telefono: '', miembros: '', mensaje: '' });
@@ -66,12 +76,14 @@ export default function LeadFormSection() {
     setFormState('submitting');
 
     try {
-      await submitLeadForm(formData);
+      await submitLeadForm(formData, turnstileToken);
       setFormState('success');
       setFormData({ nombre: '', gimnasio: '', email: '', telefono: '', miembros: '', mensaje: '' });
       setErrors({});
     } catch {
       setFormState('error');
+    } finally {
+      setTurnstileReset((n) => n + 1);
     }
   };
 
@@ -107,9 +119,11 @@ export default function LeadFormSection() {
 
                   <div className="lf-field"><label htmlFor="lf-mensaje" className="sr-only">{c.leadForm.placeholders.mensaje}</label><textarea id="lf-mensaje" name="mensaje" placeholder={c.leadForm.placeholders.mensaje} value={formData.mensaje} onChange={(e) => handleChange('mensaje', e.target.value)} rows={4} className={`w-full px-4 py-3.5 border-[1.5px] rounded-[10px] font-inter text-sm outline-none transition-all resize-none focus:border-wellness focus:ring-[3px] focus:ring-wellness/10 ${errors.mensaje ? 'border-red-400' : 'border-border-custom'}`} aria-invalid={Boolean(errors.mensaje)} />{errors.mensaje && <p className="text-xs text-red-500 mt-1" role="alert">{errors.mensaje}</p>}</div>
 
-                  <button type="submit" disabled={formState === 'submitting'} className="lf-field w-full bg-deep-blue text-white font-inter text-[15px] font-semibold py-4 rounded-[10px] shadow-[0_4px_12px_rgba(15,23,42,0.2)] hover:bg-[#1E293B] hover:-translate-y-0.5 hover:shadow-[0_6px_20px_rgba(15,23,42,0.3)] active:translate-y-0 transition-all duration-200 disabled:opacity-80 flex items-center justify-center gap-2 mt-2">{formState === 'submitting' ? <><Loader2 className="w-5 h-5 animate-spin" />{c.leadForm.sending}</> : c.leadForm.submit}</button>
+                  {TURNSTILE_SITE_KEY && <div className="lf-field"><TurnstileWidget siteKey={TURNSTILE_SITE_KEY} action="trial_signup" onToken={setTurnstileToken} resetKey={turnstileReset} /></div>}
+                  <button type="submit" disabled={formState === 'submitting' || (Boolean(TURNSTILE_SITE_KEY) && !turnstileToken)} className="lf-field w-full bg-deep-blue text-white font-inter text-[15px] font-semibold py-4 rounded-[10px] shadow-[0_4px_12px_rgba(15,23,42,0.2)] hover:bg-[#1E293B] hover:-translate-y-0.5 hover:shadow-[0_6px_20px_rgba(15,23,42,0.3)] active:translate-y-0 transition-all duration-200 disabled:opacity-80 flex items-center justify-center gap-2 mt-2">{formState === 'submitting' ? <><Loader2 className="w-5 h-5 animate-spin" />{c.leadForm.sending}</> : c.leadForm.submit}</button>
                   <p className="text-center font-inter text-xs text-text-secondary mt-1">{c.leadForm.privacy}</p>
                 </form>
+                <a href={whatsappUrl(CONTACT.whatsapp[0].number, s.contactChannels.whatsappMessage)} target="_blank" rel="noopener noreferrer" className="mt-4 w-full inline-flex items-center justify-center gap-2 font-inter text-[15px] font-semibold py-3.5 rounded-[10px] border-[1.5px] border-deep-blue/20 text-deep-blue hover:bg-deep-blue/5 transition-all duration-200"><WhatsAppIcon className="w-5 h-5" />{c.leadForm.contactCta}</a>
               </>
             )}
           </div></div>
