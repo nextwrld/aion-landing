@@ -43,7 +43,8 @@ export class PostmarkEmailDelivery implements EmailDelivery {
     this.messageStream = opts.messageStream ?? "outbound";
     this.headersTimeoutMs = opts.headersTimeoutMs ?? DEFAULT_HEADERS_TIMEOUT_MS;
     this.totalTimeoutMs = opts.totalTimeoutMs ?? DEFAULT_TOTAL_TIMEOUT_MS;
-    this.fetchImpl = opts.fetchImpl ?? fetch;
+    // Bound: workerd throws "Illegal invocation" when fetch is called as this.fetchImpl().
+    this.fetchImpl = opts.fetchImpl ?? fetch.bind(globalThis);
   }
 
   async send(message: EmailMessage): Promise<EmailDeliveryResult> {

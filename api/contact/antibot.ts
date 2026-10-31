@@ -63,7 +63,8 @@ export class TurnstileVerifier implements AntiBotVerifier {
   constructor(opts: TurnstileVerifierOptions = {}) {
     this.secret = opts.secret;
     this.timeoutMs = opts.timeoutMs ?? DEFAULT_VERIFY_TIMEOUT_MS;
-    this.fetchImpl = opts.fetchImpl ?? fetch;
+    // Bound: workerd throws "Illegal invocation" when fetch is called as this.fetchImpl().
+    this.fetchImpl = opts.fetchImpl ?? fetch.bind(globalThis);
     this.expectedAction = opts.expectedAction;
     this.expectedHostnames = opts.expectedHostnames
       ? new Set(opts.expectedHostnames.map((h) => h.trim()).filter(Boolean))
