@@ -420,6 +420,7 @@ export function createContactHandler(deps: HandlerDeps) {
         email: data.email,
         gymName: data.gymName,
         phone: data.phone,
+        country: data.country,
       });
       if (result.kind !== "accepted") {
         reportOnce(reporter, requestId, "delivery_failed", 500);

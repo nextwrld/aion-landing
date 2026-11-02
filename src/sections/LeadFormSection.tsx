@@ -8,6 +8,7 @@ import { useSite } from '../i18n/useContent';
 import { CONTACT, whatsappUrl } from '../site/contact';
 import { WhatsAppIcon } from '../components/site/BrandIcons';
 import TurnstileWidget from '../components/site/TurnstileWidget';
+import { trialCountryOptions } from '../site/countries';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -18,6 +19,7 @@ type LeadFormData = {
   gimnasio: string;
   email: string;
   telefono: string;
+  pais: string;
   miembros: string;
   mensaje: string;
 };
@@ -30,6 +32,7 @@ async function submitLeadForm(data: LeadFormData, turnstileToken: string | null)
     email: data.email,
     phone: data.telefono,
     gymName: data.gimnasio,
+    country: data.pais,
     members: data.miembros,
     message: data.mensaje,
     ...(turnstileToken ? { turnstileToken } : {}),
@@ -38,13 +41,13 @@ async function submitLeadForm(data: LeadFormData, turnstileToken: string | null)
 }
 
 export default function LeadFormSection() {
-  const { c } = useI18n()
+  const { c, lang } = useI18n()
   const s = useSite()
   const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
   const [turnstileReset, setTurnstileReset] = useState(0);
   const sectionRef = useRef<HTMLElement>(null);
   const [formState, setFormState] = useState<FormState>('idle');
-  const [formData, setFormData] = useState({ nombre: '', gimnasio: '', email: '', telefono: '', miembros: '', mensaje: '' });
+  const [formData, setFormData] = useState({ nombre: '', gimnasio: '', email: '', telefono: '', pais: '', miembros: '', mensaje: '' });
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   useEffect(() => {
@@ -64,6 +67,7 @@ export default function LeadFormSection() {
     if (!formData.email.trim()) e.email = c.leadForm.required;
     else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) e.email = c.leadForm.invalidEmail;
     if (!formData.telefono.trim()) e.telefono = c.leadForm.required;
+    if (!formData.pais) e.pais = c.leadForm.selectOption;
     if (!formData.miembros) e.miembros = c.leadForm.selectOption;
     if (!formData.mensaje.trim()) e.mensaje = c.leadForm.required;
     setErrors(e);
@@ -78,7 +82,7 @@ export default function LeadFormSection() {
     try {
       await submitLeadForm(formData, turnstileToken);
       setFormState('success');
-      setFormData({ nombre: '', gimnasio: '', email: '', telefono: '', miembros: '', mensaje: '' });
+      setFormData({ nombre: '', gimnasio: '', email: '', telefono: '', pais: '', miembros: '', mensaje: '' });
       setErrors({});
     } catch {
       setFormState('error');
@@ -115,6 +119,7 @@ export default function LeadFormSection() {
                   <div className="lf-field relative"><label htmlFor="lf-gimnasio" className="sr-only">{c.leadForm.placeholders.gimnasio}</label><Building2 className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-text-light" aria-hidden="true" /><input id="lf-gimnasio" type="text" name="gimnasio" placeholder={c.leadForm.placeholders.gimnasio} value={formData.gimnasio} onChange={(e) => handleChange('gimnasio', e.target.value)} className={`w-full pl-10 pr-4 py-3.5 border-[1.5px] rounded-[10px] font-inter text-sm outline-none transition-all focus:border-wellness focus:ring-[3px] focus:ring-wellness/10 ${errors.gimnasio ? 'border-red-400' : 'border-border-custom'}`} aria-invalid={Boolean(errors.gimnasio)} />{errors.gimnasio && <p className="text-xs text-red-500 mt-1" role="alert">{errors.gimnasio}</p>}</div>
                   <div className="lf-field relative"><label htmlFor="lf-email" className="sr-only">{c.leadForm.placeholders.email}</label><Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-text-light" aria-hidden="true" /><input id="lf-email" type="email" name="email" placeholder={c.leadForm.placeholders.email} value={formData.email} onChange={(e) => handleChange('email', e.target.value)} className={`w-full pl-10 pr-4 py-3.5 border-[1.5px] rounded-[10px] font-inter text-sm outline-none transition-all focus:border-wellness focus:ring-[3px] focus:ring-wellness/10 ${errors.email ? 'border-red-400' : 'border-border-custom'}`} aria-invalid={Boolean(errors.email)} />{errors.email && <p className="text-xs text-red-500 mt-1" role="alert">{errors.email}</p>}</div>
                   <div className="lf-field relative"><label htmlFor="lf-telefono" className="sr-only">{c.leadForm.placeholders.telefono}</label><Phone className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-text-light" aria-hidden="true" /><input id="lf-telefono" type="tel" name="telefono" placeholder={c.leadForm.placeholders.telefono} value={formData.telefono} onChange={(e) => handleChange('telefono', e.target.value)} className={`w-full pl-10 pr-4 py-3.5 border-[1.5px] rounded-[10px] font-inter text-sm outline-none transition-all focus:border-wellness focus:ring-[3px] focus:ring-wellness/10 ${errors.telefono ? 'border-red-400' : 'border-border-custom'}`} aria-invalid={Boolean(errors.telefono)} />{errors.telefono && <p className="text-xs text-red-500 mt-1" role="alert">{errors.telefono}</p>}</div>
+                  <div className="lf-field"><label htmlFor="lf-pais" className="sr-only">{c.leadForm.placeholders.pais}</label><select id="lf-pais" name="pais" value={formData.pais} onChange={(e) => handleChange('pais', e.target.value)} className={`w-full px-4 py-3.5 border-[1.5px] rounded-[10px] font-inter text-sm outline-none transition-all focus:border-wellness focus:ring-[3px] focus:ring-wellness/10 appearance-none bg-white ${errors.pais ? 'border-red-400' : 'border-border-custom'} ${!formData.pais ? 'text-text-light' : 'text-text-primary'}`} aria-invalid={Boolean(errors.pais)}><option value="">{c.leadForm.placeholders.pais}</option>{trialCountryOptions(lang).map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}</select>{errors.pais && <p className="text-xs text-red-500 mt-1" role="alert">{errors.pais}</p>}</div>
                   <div className="lf-field"><label htmlFor="lf-miembros" className="sr-only">{c.leadForm.placeholders.miembros}</label><select id="lf-miembros" name="miembros" value={formData.miembros} onChange={(e) => handleChange('miembros', e.target.value)} className={`w-full px-4 py-3.5 border-[1.5px] rounded-[10px] font-inter text-sm outline-none transition-all focus:border-wellness focus:ring-[3px] focus:ring-wellness/10 appearance-none bg-white ${errors.miembros ? 'border-red-400' : 'border-border-custom'} ${!formData.miembros ? 'text-text-light' : 'text-text-primary'}`} aria-invalid={Boolean(errors.miembros)}><option value="">{c.leadForm.placeholders.miembros}</option>{c.leadForm.membersOptions.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}</select>{errors.miembros && <p className="text-xs text-red-500 mt-1" role="alert">{errors.miembros}</p>}</div>
 
                   <div className="lf-field"><label htmlFor="lf-mensaje" className="sr-only">{c.leadForm.placeholders.mensaje}</label><textarea id="lf-mensaje" name="mensaje" placeholder={c.leadForm.placeholders.mensaje} value={formData.mensaje} onChange={(e) => handleChange('mensaje', e.target.value)} rows={4} className={`w-full px-4 py-3.5 border-[1.5px] rounded-[10px] font-inter text-sm outline-none transition-all resize-none focus:border-wellness focus:ring-[3px] focus:ring-wellness/10 ${errors.mensaje ? 'border-red-400' : 'border-border-custom'}`} aria-invalid={Boolean(errors.mensaje)} />{errors.mensaje && <p className="text-xs text-red-500 mt-1" role="alert">{errors.mensaje}</p>}</div>

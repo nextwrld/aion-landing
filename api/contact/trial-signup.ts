@@ -3,7 +3,7 @@
  * The backend only stores a pending signup and emails the verification link.
  */
 
-export type TrialSignupInput = { fullName: string; email: string; gymName: string; phone: string };
+export type TrialSignupInput = { fullName: string; email: string; gymName: string; phone: string; country: string };
 export type TrialSignupResult = { kind: "accepted" } | { kind: "failed" };
 
 export interface TrialSignupClient {
@@ -35,6 +35,7 @@ export class BackendTrialSignupClient implements TrialSignupClient {
           email: input.email,
           gym_name: input.gymName,
           phone: input.phone,
+          country_code: input.country,
         }),
         signal: AbortSignal.timeout(this.opts.timeoutMs ?? 10_000),
       });

@@ -10,6 +10,7 @@ const validBody = {
   email: "ada@example.com",
   phone: "+54 (11) 4567-8901",
   gymName: "Analytical Gym",
+  country: "mx",
   members: "100_400",
   message: "Quiero probar.",
   turnstileToken: "tok",
@@ -55,6 +56,7 @@ describe("contact handler — self-serve trial", () => {
       email: "ada@example.com",
       gymName: "Analytical Gym",
       phone: "+54 (11) 4567-8901",
+      country: "MX",
     });
     expect(send).toHaveBeenCalledOnce();
     expect(send.mock.calls[0][0].subject).toBe("Prueba gratuita solicitada: Ada Lovelace");
@@ -134,18 +136,18 @@ describe("BackendTrialSignupClient", () => {
   it("posts the signup with the shared secret", async () => {
     const fetchImpl = vi.fn().mockResolvedValue(new Response("{}", { status: 202 }));
     const client = new BackendTrialSignupClient({ url: "https://api.example/v1/public/trial-signups", secret: "sh", fetchImpl });
-    const out = await client.request({ fullName: "A", email: "a@b.c", gymName: "G", phone: "1" });
+    const out = await client.request({ fullName: "A", email: "a@b.c", gymName: "G", phone: "1", country: "US" });
     expect(out).toEqual({ kind: "accepted" });
     const [url, init] = fetchImpl.mock.calls[0];
     expect(url).toBe("https://api.example/v1/public/trial-signups");
     expect(init.headers["X-Trial-Signup-Secret"]).toBe("sh");
-    expect(JSON.parse(init.body)).toEqual({ full_name: "A", email: "a@b.c", gym_name: "G", phone: "1" });
+    expect(JSON.parse(init.body)).toEqual({ full_name: "A", email: "a@b.c", gym_name: "G", phone: "1", country_code: "US" });
   });
 
   it("reports failure on a non-2xx answer or network error", async () => {
     const bad = new BackendTrialSignupClient({ url: "u", secret: "s", fetchImpl: vi.fn().mockResolvedValue(new Response("", { status: 404 })) });
     const down = new BackendTrialSignupClient({ url: "u", secret: "s", fetchImpl: vi.fn().mockRejectedValue(new Error("x")) });
-    expect(await bad.request({ fullName: "A", email: "a@b.c", gymName: "G", phone: "1" })).toEqual({ kind: "failed" });
-    expect(await down.request({ fullName: "A", email: "a@b.c", gymName: "G", phone: "1" })).toEqual({ kind: "failed" });
+    expect(await bad.request({ fullName: "A", email: "a@b.c", gymName: "G", phone: "1", country: "US" })).toEqual({ kind: "failed" });
+    expect(await down.request({ fullName: "A", email: "a@b.c", gymName: "G", phone: "1", country: "US" })).toEqual({ kind: "failed" });
   });
 });

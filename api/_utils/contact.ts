@@ -28,11 +28,18 @@ const phone = singleLine(32).refine((value) => {
   return /^[0-9+().\-\s]+$/.test(value) && digitCount >= 7 && digitCount <= 15;
 });
 
+// Keep in sync with src/site/countries.ts and backend app/domains/trial_signups/countries.py.
+export const TRIAL_COUNTRY_CODES = [
+  "AR", "BO", "CL", "CO", "CR", "CU", "DO", "EC", "SV", "GT",
+  "HN", "MX", "NI", "PA", "PY", "PE", "PR", "UY", "VE", "US",
+] as const;
+
 export const contactSchema = z.strictObject({
   fullName: singleLine(100),
   email: singleLine(254).pipe(z.email()),
   phone,
   gymName: singleLine(120),
+  country: z.string().trim().toUpperCase().pipe(z.enum(TRIAL_COUNTRY_CODES)),
   members: z.string().trim().pipe(z.enum(["lt_100", "100_400", "gt_400"])),
   message,
 });
@@ -69,6 +76,7 @@ export function renderContactEmail(contact: Contact): string {
         <p style="margin: 0 0 10px;"><strong>Email:</strong> ${escapeHtml(contact.email)}</p>
         <p style="margin: 0 0 10px;"><strong>Teléfono:</strong> ${escapeHtml(contact.phone)}</p>
         <p style="margin: 0 0 10px;"><strong>Gimnasio:</strong> ${escapeHtml(contact.gymName)}</p>
+        <p style="margin: 0 0 10px;"><strong>País:</strong> ${escapeHtml(contact.country)}</p>
         <p style="margin: 0 0 10px;"><strong>Miembros:</strong> ${escapeHtml(memberLabels[contact.members])}</p>
         <p style="margin: 0 0 6px;"><strong>Mensaje:</strong></p>
         <div style="white-space: pre-wrap; line-height: 1.5; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px;">${escapeHtml(contact.message)}</div>
