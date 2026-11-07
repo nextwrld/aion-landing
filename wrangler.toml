@@ -3,19 +3,25 @@
 # No nodejs_compat — the Worker uses only fetch / Web APIs (Postmark via HTTPS).
 
 name = "aion-landing-contact"
+# Production Cloudflare account (owns the aionwellness.pro zone).
+account_id = "76484c0d1c4db7a7ca8b244d23b88903"
 main = "api/contact.ts"
 compatibility_date = "2026-08-20"
 
+# ── Routes ───────────────────────────────────────────────────────────────────
+# The site (Cloudflare Pages) serves both hosts; only the form endpoint goes to this Worker.
+# The aionwellness.pro zone must be in the same Cloudflare account this Worker deploys to.
+routes = [
+  { pattern = "www.aionwellness.pro/api/contact", zone_name = "aionwellness.pro" },
+  { pattern = "aionwellness.pro/api/contact", zone_name = "aionwellness.pro" },
+]
+
 # ── KV namespaces ────────────────────────────────────────────────────────────
-# TODO(owner): replace placeholder IDs with real KV namespace IDs before first deploy.
-# Create with: wrangler kv namespace create CONTACT_RATE_LIMIT_KV  (and --preview)
-# Then copy the returned `id` / `preview_id` below. Preview and production MUST be distinct.
+# Production and preview are distinct namespaces in the production account.
 [[kv_namespaces]]
 binding = "CONTACT_RATE_LIMIT_KV"
-# TODO: replace with production KV id
-id = "REPLACE_WITH_PRODUCTION_KV_ID"
-# TODO: replace with preview KV id
-preview_id = "REPLACE_WITH_PREVIEW_KV_ID"
+id = "ab723a955c694c37a2cca37c28ee79bf"
+preview_id = "881c0fab32da47e091a98c3baf79b7ba"
 
 # ── Non-secret vars ──────────────────────────────────────────────────────────
 [vars]
@@ -29,13 +35,16 @@ EMAIL_TOTAL_TIMEOUT_MS = "20000"
 EMAIL_FROM = "contact@nextwrld.com"
 EMAIL_TO = "contact@nextwrld.com"
 POSTMARK_MESSAGE_STREAM = "outbound"
+# Self-serve trial: production backend and the hostnames Turnstile must report.
+# Local dev overrides both in .dev.vars.
+TRIAL_SIGNUP_URL = "https://api.aionwellness.pro/v1/public/trial-signups"
+TURNSTILE_HOSTNAMES = "www.aionwellness.pro,aionwellness.pro"
 
 # Secrets (never in this file):
 #   TURNSTILE_SECRET_KEY
 #   POSTMARK_SERVER_TOKEN
 #   CONTACT_IP_HASH_KEY
 #   TRIAL_SIGNUP_SECRET   (self-serve trial; same value as the backend's)
-# Self-serve trial vars (set per environment): TRIAL_SIGNUP_URL, TURNSTILE_HOSTNAMES.
 # Frontend build: VITE_TURNSTILE_SITE_KEY renders the widget (action "trial_signup").
 # Set with: wrangler secret put <NAME>
 # Local dev: copy .dev.vars.example → .dev.vars (gitignored)
