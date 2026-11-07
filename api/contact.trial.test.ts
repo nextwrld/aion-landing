@@ -48,7 +48,8 @@ async function call(o: Overrides = {}) {
 }
 
 describe("contact handler — self-serve trial", () => {
-  it("creates the trial signup and notifies the team", async () => {
+  // The backend emails the prospect and the team (SMTP); the Worker sends no email here.
+  it("creates the trial signup without sending email from the Worker", async () => {
     const { res, send, trial } = await call();
     expect(res.status).toBe(200);
     expect(trial).toHaveBeenCalledWith({
@@ -58,20 +59,13 @@ describe("contact handler — self-serve trial", () => {
       phone: "+54 (11) 4567-8901",
       country: "MX",
     });
-    expect(send).toHaveBeenCalledOnce();
-    expect(send.mock.calls[0][0].subject).toBe("Prueba gratuita solicitada: Ada Lovelace");
-  });
-
-  it("returns 500 and skips the team email when the backend fails", async () => {
-    const { res, send } = await call({ trial: vi.fn().mockResolvedValue({ kind: "failed" }) });
-    expect(res.status).toBe(500);
     expect(send).not.toHaveBeenCalled();
   });
 
-  it("still succeeds when only the team email fails", async () => {
-    const { res, trial } = await call({ send: vi.fn().mockRejectedValue(new Error("down")) });
-    expect(res.status).toBe(200);
-    expect(trial).toHaveBeenCalledOnce();
+  it("returns 500 when the backend fails", async () => {
+    const { res, send } = await call({ trial: vi.fn().mockResolvedValue({ kind: "failed" }) });
+    expect(res.status).toBe(500);
+    expect(send).not.toHaveBeenCalled();
   });
 
   it("fails closed when the anti-bot check is unavailable", async () => {

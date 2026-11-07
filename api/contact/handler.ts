@@ -431,17 +431,7 @@ export function createContactHandler(deps: HandlerDeps) {
         });
         return jsonResponse(errorBody("delivery_failed", requestId), 500, requestId);
       }
-      // The team email is only a notice: the prospect already got their link.
-      try {
-        await delivery.send({
-          from: emailFrom,
-          to: emailTo,
-          subject: `Prueba gratuita solicitada: ${data.fullName}`,
-          html: renderContactEmail(data),
-        });
-      } catch {
-        logger.warn("contact.team_notice_failure", { duration_ms: duration(), request_id: requestId });
-      }
+      // The backend emails the prospect and notifies the team over SMTP; nothing to send here.
       logger.info("contact.submit", {
         outcome: "trial_requested",
         http_status: 200,

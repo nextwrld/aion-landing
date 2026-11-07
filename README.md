@@ -88,10 +88,16 @@ Nunca en `wrangler.toml` / `.env` / `.dev.vars.example`:
 
 ```sh
 wrangler secret put TURNSTILE_SECRET_KEY
-wrangler secret put POSTMARK_SERVER_TOKEN
 wrangler secret put CONTACT_IP_HASH_KEY
+wrangler secret put TRIAL_SIGNUP_SECRET     # mismo valor que el backend
+# Solo con la prueba gratuita apagada (formulario de contacto clásico):
+wrangler secret put POSTMARK_SERVER_TOKEN
 # Opcional para preview: wrangler secret put <NAME> --env preview
 ```
+
+Con la prueba gratuita activa (producción: `TRIAL_SIGNUP_URL` + `TRIAL_SIGNUP_SECRET`), el Worker
+no envía correos: el backend manda por SMTP el link al gimnasio y los avisos al equipo
+(`TRIAL_NOTIFY_EMAILS`), tanto al pedir la prueba como al activarla. Postmark no hace falta.
 
 Local: `.dev.vars` (gitignored) con los mismos nombres (ver `.dev.vars.example`).
 

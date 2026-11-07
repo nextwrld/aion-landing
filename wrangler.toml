@@ -42,9 +42,10 @@ TURNSTILE_HOSTNAMES = "www.aionwellness.pro,aionwellness.pro"
 
 # Secrets (never in this file):
 #   TURNSTILE_SECRET_KEY
-#   POSTMARK_SERVER_TOKEN
 #   CONTACT_IP_HASH_KEY
 #   TRIAL_SIGNUP_SECRET   (self-serve trial; same value as the backend's)
+#   POSTMARK_SERVER_TOKEN (only when the trial is off: the plain contact form emails via Postmark;
+#                          with the trial on, the backend sends every email over SMTP)
 # Frontend build: VITE_TURNSTILE_SITE_KEY renders the widget (action "trial_signup").
 # Set with: wrangler secret put <NAME>
 # Local dev: copy .dev.vars.example → .dev.vars (gitignored)
