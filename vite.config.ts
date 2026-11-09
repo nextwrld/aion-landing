@@ -10,6 +10,10 @@ export default defineConfig({
   plugins: [inspectAttr(), react()],
   server: {
     port: 3000,
+    // Local dev: /api/contact is served by `wrangler dev` (default port 8787).
+    proxy: {
+      "/api": "http://127.0.0.1:8787",
+    },
   },
   resolve: {
     alias: {

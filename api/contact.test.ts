@@ -9,6 +9,7 @@ const validBody = {
   email: "ada@example.com",
   phone: "+54 (11) 4567-8901",
   gymName: "Analytical Gym",
+  country: "AR",
   members: "100_400",
   message: "I would like a demo.",
 };
@@ -112,6 +113,16 @@ describe("contact handler", () => {
     ["message", 2001],
   ])("rejects %s over its %i character limit", async (field, length) => {
     const { state } = await request({ ...validBody, [field]: "a".repeat(length as number) });
+    expect(state.status).toBe(400);
+  });
+
+  it.each(["BR", "", "ARG"])("rejects unsupported country %s", async (country) => {
+    const { state } = await request({ ...validBody, country });
+    expect(state.status).toBe(400);
+  });
+
+  it("rejects a missing country", async () => {
+    const { state } = await request({ ...validBody, country: undefined });
     expect(state.status).toBe(400);
   });
 
