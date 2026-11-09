@@ -24,7 +24,7 @@ export default function SegmentCards({ exclude, compact = false }: { exclude?: S
             <span className="w-12 h-12 rounded-xl bg-wellness-light flex items-center justify-center">
               <Icon className="w-6 h-6 text-wellness" strokeWidth={1.5} aria-hidden="true" />
             </span>
-            <h3 className="font-sora font-semibold text-lg text-deep-blue mt-5">{seg.name}</h3>
+            <h3 className="font-display font-semibold text-lg text-deep-blue mt-5">{seg.name}</h3>
             {!compact && <p className="font-inter text-xs text-text-light mt-1">{seg.examples}</p>}
             <p className="font-inter text-sm text-text-secondary leading-relaxed mt-3 flex-1">{seg.short}</p>
             <span className="mt-5 inline-flex items-center gap-1.5 font-inter text-sm font-semibold text-wellness">

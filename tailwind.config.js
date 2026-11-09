@@ -5,7 +5,7 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
-        sora: ['Sora', 'sans-serif'],
+        display: ['Space Grotesk', 'sans-serif'],
         inter: ['Inter', 'sans-serif'],
       },
       colors: {

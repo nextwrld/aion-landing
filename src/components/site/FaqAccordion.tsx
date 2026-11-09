@@ -24,7 +24,7 @@ export default function FaqAccordion({ items, defaultOpen = null }: { items: QA[
                 aria-controls={panelId}
                 className="w-full flex items-center justify-between py-5 text-left hover:bg-wellness/[0.03] transition-colors px-2 -mx-2 rounded-lg"
               >
-                <span className="font-sora font-semibold text-base sm:text-lg text-deep-blue pr-4">{item.q}</span>
+                <span className="font-display font-semibold text-base sm:text-lg text-deep-blue pr-4">{item.q}</span>
                 <ChevronDown
                   className={`w-5 h-5 text-text-secondary flex-shrink-0 transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`}
                   aria-hidden="true"

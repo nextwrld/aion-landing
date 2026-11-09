@@ -18,7 +18,7 @@ export default function FeatureRow({ id, badge, title, description, bullets, vis
     <div id={id} className="grid lg:grid-cols-2 gap-10 lg:gap-16 items-center scroll-mt-28">
       <div data-reveal className={reverse ? 'lg:order-2' : ''}>
         {badge && <span className="font-inter text-xs font-semibold tracking-[0.08em] uppercase text-wellness">{badge}</span>}
-        <h3 className="font-sora font-semibold text-2xl sm:text-[28px] leading-[1.25] tracking-[-0.01em] text-deep-blue mt-3 text-balance">{title}</h3>
+        <h3 className="font-display font-semibold text-2xl sm:text-[28px] leading-[1.25] tracking-[-0.01em] text-deep-blue mt-3 text-balance">{title}</h3>
         <p className="font-inter text-base text-text-secondary mt-4 leading-relaxed max-w-[520px]">{description}</p>
         <ul className="mt-6 flex flex-col gap-3">
           {bullets.map((b) => (

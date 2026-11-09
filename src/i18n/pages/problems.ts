@@ -67,7 +67,7 @@ const es = {
       id: 'cierre-de-caja',
       title: 'Cierre de caja a ciegas',
       situation:
-        'Al final del día se suma a mano lo que entró. Si no cuadra, nadie sabe dónde está la diferencia.',
+        'Al final del día se suma a mano lo que entró. Si no cuadra, no es posible identificar dónde está la diferencia.',
       cost: 'Tiempo perdido, faltantes sin explicación y poca confianza en los números.',
       solution:
         'El cierre de caja reúne los cobros del día por método de pago. Ves el total esperado y lo comparas con lo que hay.',

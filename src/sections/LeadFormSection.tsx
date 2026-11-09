@@ -101,17 +101,17 @@ export default function LeadFormSection() {
       <div className="section-container">
         <div className="grid lg:grid-cols-[45%_55%] gap-10 lg:gap-16 items-center">
           <div className="lf-left text-center lg:text-left">
-            <h2 id="demo-heading" className="font-sora font-semibold text-[28px] sm:text-[32px] lg:text-[36px] leading-[1.25] tracking-[-0.01em] text-white">{c.leadForm.title}</h2>
+            <h2 id="demo-heading" className="font-display font-semibold text-[28px] sm:text-[32px] lg:text-[36px] leading-[1.25] tracking-[-0.01em] text-white">{c.leadForm.title}</h2>
             <p className="font-inter text-base text-white/85 mt-4 leading-relaxed">{c.leadForm.subtitle}</p>
             <div className="mt-8 flex flex-col gap-4">{c.leadForm.benefits.map((benefit, i) => <div key={i} className="flex items-center gap-3 justify-center lg:justify-start"><div className="lf-check w-5 h-5 rounded-full bg-white flex items-center justify-center flex-shrink-0"><Check className="w-3 h-3 text-wellness" strokeWidth={3} /></div><span className="font-inter text-base text-white">{benefit}</span></div>)}</div>
           </div>
 
           <div className="lf-right"><div className="bg-white rounded-2xl p-6 sm:p-8 lg:p-10 shadow-form-card">
             {formState === 'success' ? (
-              <div className="text-center py-8"><div className="w-16 h-16 rounded-full bg-wellness-light flex items-center justify-center mx-auto mb-4"><Check className="w-8 h-8 text-wellness" strokeWidth={2.5} /></div><h3 className="font-sora font-semibold text-xl text-deep-blue mb-2">{c.leadForm.successTitle}</h3><p className="font-inter text-sm text-text-secondary">{c.leadForm.successSubtitle}</p></div>
+              <div className="text-center py-8"><div className="w-16 h-16 rounded-full bg-wellness-light flex items-center justify-center mx-auto mb-4"><Check className="w-8 h-8 text-wellness" strokeWidth={2.5} /></div><h3 className="font-display font-semibold text-xl text-deep-blue mb-2">{c.leadForm.successTitle}</h3><p className="font-inter text-sm text-text-secondary">{c.leadForm.successSubtitle}</p></div>
             ) : (
               <>
-                <h3 className="font-sora font-semibold text-xl text-deep-blue mb-6">{c.leadForm.formTitle}</h3>
+                <h3 className="font-display font-semibold text-xl text-deep-blue mb-6">{c.leadForm.formTitle}</h3>
                 {formState === 'error' && <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-[10px]"><p className="font-inter text-sm text-red-600">{c.leadForm.error}</p></div>}
 
                 <form onSubmit={handleSubmit} className="flex flex-col gap-4" noValidate>

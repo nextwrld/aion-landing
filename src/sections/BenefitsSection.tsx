@@ -25,19 +25,19 @@ export default function BenefitsSection() {
     <section ref={sectionRef} id="beneficios" aria-labelledby="benefits-heading" className="bg-white py-16 sm:py-20 lg:py-[120px]">
       <div className="section-container">
         <div className="bnf-headline text-center mb-12 lg:mb-16">
-          <h2 id="benefits-heading" className="font-sora font-semibold text-[28px] sm:text-[32px] lg:text-[36px] leading-[1.25] tracking-[-0.01em] text-deep-blue">{c.benefits.title}</h2>
+          <h2 id="benefits-heading" className="font-display font-semibold text-[28px] sm:text-[32px] lg:text-[36px] leading-[1.25] tracking-[-0.01em] text-deep-blue">{c.benefits.title}</h2>
           <p className="font-inter text-base text-text-secondary mt-4 max-w-[520px] mx-auto leading-relaxed">{c.benefits.subtitle}</p>
         </div>
 
-        <div className="bnf-grid grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="bnf-grid flex flex-wrap justify-center gap-6">
           {c.benefits.items.map((benefit, i) => {
             const Icon = ICONS[i]
             return (
-              <div key={i} className="bnf-card bg-white rounded-2xl border border-border-custom p-8 shadow-card hover:shadow-card-hover hover:-translate-y-1 transition-all duration-300 text-center relative overflow-hidden">
+              <div key={i} className="bnf-card w-full sm:w-[calc(50%-12px)] lg:w-[calc(25%-18px)] bg-white rounded-2xl border border-border-custom p-8 shadow-card hover:shadow-card-hover hover:-translate-y-1 transition-all duration-300 text-center relative overflow-hidden">
                 <div className="w-16 h-16 rounded-2xl bg-wellness-light flex items-center justify-center mx-auto mb-5">
                   <Icon className="w-7 h-7 text-wellness" strokeWidth={1.5} />
                 </div>
-                <h3 className="font-sora font-semibold text-lg text-deep-blue mb-3">{benefit.title}</h3>
+                <h3 className="font-display font-semibold text-lg text-deep-blue mb-3">{benefit.title}</h3>
                 <p className="font-inter text-sm text-text-secondary leading-relaxed">{benefit.description}</p>
                 <div className="bnf-accent absolute bottom-0 left-1/2 -translate-x-1/2 w-10 h-[3px] bg-wellness rounded-full origin-center" />
               </div>

@@ -50,7 +50,7 @@ export default function BenefitsPage() {
                 <span className="w-12 h-12 rounded-xl bg-wellness-light flex items-center justify-center">
                   <Icon className="w-6 h-6 text-wellness" strokeWidth={1.5} aria-hidden="true" />
                 </span>
-                <h2 className="font-sora font-semibold text-lg text-deep-blue mt-5">{p.title}</h2>
+                <h2 className="font-display font-semibold text-lg text-deep-blue mt-5">{p.title}</h2>
                 <p className="font-inter text-sm text-text-secondary leading-relaxed mt-2">{p.description}</p>
               </div>
             )
@@ -101,7 +101,7 @@ export default function BenefitsPage() {
                     <span className="w-11 h-11 rounded-full gradient-cta flex items-center justify-center">
                       <Icon className="w-5 h-5 text-white" strokeWidth={1.75} aria-hidden="true" />
                     </span>
-                    <h3 className="font-sora font-semibold text-lg text-deep-blue">{r.role}</h3>
+                    <h3 className="font-display font-semibold text-lg text-deep-blue">{r.role}</h3>
                   </div>
                   <ul className="mt-5 flex flex-col gap-3">
                     {r.points.map((pt) => (
@@ -126,7 +126,7 @@ export default function BenefitsPage() {
               <thead className="bg-light-gray">
                 <tr>
                   {t.comparison.columns.map((col, i) => (
-                    <th key={col} scope="col" className={`font-sora font-semibold text-sm px-6 py-4 ${i === 2 ? 'text-wellness-dark' : 'text-text-secondary'}`}>
+                    <th key={col} scope="col" className={`font-display font-semibold text-sm px-6 py-4 ${i === 2 ? 'text-wellness-dark' : 'text-text-secondary'}`}>
                       {col}
                     </th>
                   ))}
@@ -158,7 +158,7 @@ export default function BenefitsPage() {
           <ul className="sm:hidden flex flex-col gap-4">
             {t.comparison.rows.map(([topic, before, after]) => (
               <li key={topic} data-reveal className="rounded-2xl border border-border-custom shadow-card overflow-hidden">
-                <div className="bg-light-gray px-5 py-3 font-sora font-semibold text-sm text-deep-blue">{topic}</div>
+                <div className="bg-light-gray px-5 py-3 font-display font-semibold text-sm text-deep-blue">{topic}</div>
                 <div className="px-5 py-3 flex items-start gap-2 font-inter text-sm text-text-secondary">
                   <X className="w-4 h-4 text-red-400 mt-0.5 flex-shrink-0" aria-label={t.comparison.columns[1]} />
                   {before}
@@ -187,7 +187,7 @@ export default function BenefitsPage() {
                     </span>
                     <StatusBadge status="comingSoon" />
                   </div>
-                  <h3 className="font-sora font-semibold text-lg text-deep-blue mt-5">{item.title}</h3>
+                  <h3 className="font-display font-semibold text-lg text-deep-blue mt-5">{item.title}</h3>
                   <p className="font-inter text-sm text-text-secondary leading-relaxed mt-2">{item.description}</p>
                 </div>
               )

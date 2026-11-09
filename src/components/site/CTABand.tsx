@@ -11,7 +11,7 @@ export default function CTABand() {
   return (
     <section aria-labelledby="cta-band-heading" className="gradient-cta py-16 sm:py-20">
       <div data-reveal className="section-container text-center">
-        <h2 id="cta-band-heading" className="font-sora font-semibold text-[28px] sm:text-[32px] lg:text-[36px] leading-[1.25] tracking-[-0.01em] text-white text-balance max-w-[720px] mx-auto">
+        <h2 id="cta-band-heading" className="font-display font-semibold text-[28px] sm:text-[32px] lg:text-[36px] leading-[1.25] tracking-[-0.01em] text-white text-balance max-w-[720px] mx-auto">
           {s.ctaBand.title}
         </h2>
         <p className="font-inter text-base text-white/85 mt-4 max-w-[560px] mx-auto leading-relaxed">{s.ctaBand.subtitle}</p>

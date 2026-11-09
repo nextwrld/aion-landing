@@ -21,7 +21,7 @@ export default function PainPointsSection() {
     <section ref={sectionRef} id="problemas" aria-labelledby="painpoints-heading" className="bg-light-gray py-16 sm:py-20 lg:py-[120px]">
       <div className="section-container">
         <div className="pp-headline text-center mb-12 lg:mb-16">
-          <h2 id="painpoints-heading" className="font-sora font-semibold text-[28px] sm:text-[32px] lg:text-[36px] leading-[1.25] tracking-[-0.01em] text-deep-blue max-w-[640px] mx-auto">{c.painPoints.title}</h2>
+          <h2 id="painpoints-heading" className="font-display font-semibold text-[28px] sm:text-[32px] lg:text-[36px] leading-[1.25] tracking-[-0.01em] text-deep-blue max-w-[640px] mx-auto">{c.painPoints.title}</h2>
           <p className="font-inter text-base text-text-secondary mt-4 max-w-[560px] mx-auto leading-relaxed">{c.painPoints.subtitle}</p>
         </div>
 
@@ -31,7 +31,7 @@ export default function PainPointsSection() {
               <div className="flex justify-center mb-6 group-hover:-translate-y-1.5 transition-transform duration-300">
                 <img src={point.image} alt={point.title} className="h-[120px] w-auto object-contain" />
               </div>
-              <h3 className="font-sora font-semibold text-lg text-deep-blue mb-3">{point.title}</h3>
+              <h3 className="font-display font-semibold text-lg text-deep-blue mb-3">{point.title}</h3>
               <p className="font-inter text-sm text-text-secondary leading-relaxed">{point.description}</p>
             </div>
           ))}

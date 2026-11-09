@@ -7,8 +7,8 @@ export default function NotFoundPage() {
   return (
     <section aria-labelledby="not-found-heading" className="min-h-[70vh] flex items-center pt-[72px]">
       <div className="section-container text-center py-20">
-        <p className="font-sora font-bold text-[72px] leading-none gradient-cta-text">404</p>
-        <h1 id="not-found-heading" className="font-sora font-semibold text-[28px] sm:text-[32px] text-deep-blue mt-4">
+        <p className="font-display font-bold text-[72px] leading-none gradient-cta-text">404</p>
+        <h1 id="not-found-heading" className="font-display font-semibold text-[28px] sm:text-[32px] text-deep-blue mt-4">
           {s.notFound.title}
         </h1>
         <p className="font-inter text-base text-text-secondary mt-3 max-w-[420px] mx-auto">{s.notFound.text}</p>

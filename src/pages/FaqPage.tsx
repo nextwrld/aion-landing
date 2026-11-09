@@ -83,7 +83,7 @@ export default function FaqPage() {
             )}
             {filtered.map((c) => (
               <section key={`${c.id}-${query}`} id={c.id} aria-labelledby={`faq-cat-${c.id}`} className="scroll-mt-28">
-                <h2 id={`faq-cat-${c.id}`} className="font-sora font-semibold text-xl text-deep-blue mb-2">{c.title}</h2>
+                <h2 id={`faq-cat-${c.id}`} className="font-display font-semibold text-xl text-deep-blue mb-2">{c.title}</h2>
                 <FaqAccordion items={c.items} defaultOpen={query ? 0 : null} />
               </section>
             ))}
@@ -95,7 +95,7 @@ export default function FaqPage() {
                 <MessageCircle className="w-6 h-6 text-wellness" strokeWidth={1.5} aria-hidden="true" />
               </span>
               <div>
-                <h2 className="font-sora font-semibold text-lg text-deep-blue">{t.stillQuestions.title}</h2>
+                <h2 className="font-display font-semibold text-lg text-deep-blue">{t.stillQuestions.title}</h2>
                 <p className="font-inter text-sm text-text-secondary mt-1">{t.stillQuestions.text}</p>
               </div>
             </div>
